@@ -1,0 +1,52 @@
+@startuml
+skinparam componentStyle uml2
+
+title Приложение Movies 'AS IS'
+
+
+component AdminPanel
+
+database "Elastic: Полнотекстовый поиск" as ElasticSearch #Lightblue
+database "Redis: Кэширование" as RedisSearchCashing #Red
+
+database "БД Фильмов" as PostgreMovies {
+component FilmworkTable
+component GenreTable
+component PersonTable
+}
+
+' Компоненты FastAPI
+component FastApi #Green
+interface SearchInterface #Green
+
+' Компоненты сервиса аутентификации
+package AuthService {
+database "Redis: Стоп-листы для токенов" as RedisTokens #Red
+database "Postgres: Данные Юзеров" as PostgreUsers #Lightblue
+component FlaskAuth #Green
+component Jaeger #Orange
+}
+
+interface AuthApi #Yellow
+
+
+' Взаимодействия
+AdminPanel <-[#red]> PostgreMovies
+
+ElasticSearch -> PostgreMovies: ETL
+ElasticSearch -> RedisSearchCashing: Кэширование
+SearchInterface <- FastApi
+
+' Взаимодействия внутри AuthService
+AuthService -> AuthApi: Интерфейс
+FastApi <-> AuthApi
+note right
+RestAPI
+- CRUD Пользователей, Ролей
+- Работа с JWT токенами
+end note
+FlaskAuth <- PostgreUsers
+FlaskAuth <- RedisTokens
+
+
+@enduml
