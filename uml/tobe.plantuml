@@ -30,7 +30,12 @@ component "OAuth 2.0" as OAuth #Blue
 
 ' Компоненты сервиса UGC
 package UserGeneratedContent {
-component "Шина (Kafka)" as Kafka
+component "OLTP(Kafka)" as Kafka
+note right
+Содержит топик 'views'
+Партицирована по ключу 'user_id+movie_id'
+end note
+component OLAP
 }
 
 cloud "Провайдеры" as Providers
@@ -41,7 +46,7 @@ interface AuthApi #Yellow
 ' Взаимодействия
 AdminPanel <-[#red]> PostgreMovies
 
-ElasticSearch -> PostgreMovies: ETL
+ElasticSearch -down-> PostgreMovies: ETL
 ElasticSearch --> RedisSearchCashing: Кэширование
 SearchInterface <- FastApi
 
