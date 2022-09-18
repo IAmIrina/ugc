@@ -6,27 +6,30 @@ skinparam responseMessageBelowArrow true
 title Детальная схема UGC 
 
 ' Участники
-actor User #Yellow
-participant Clickhouse #Lightblue
-participant ETL #Green
+actor "Аналитик" as User #Green
+database Clickhouse #Lightblue
 participant Kafka #Red
+actor Frontend #Brown
 
 ' Взаимодействия
-== Initialization ==
-Kafka -> ETL: "Есть изменения"
-
-== Обработка запроса ==
-User -> Clickhouse: Аналитический запрос
-Clickhouse <-> ETL: Получает данные
-
-== Misc ==
-
-alt#Gold #LightBlue Successful case
-    Clickhouse -> Kafka: Authentication Accepted
-else #Pink Failure
-    Clickhouse -> Kafka: Authentication Rejected
+Frontend -[#brown]> Kafka: Информация о просмотрах фильмов
+note right: Ежесекундно/ежеминутно
+loop ∞
+Kafka -[#red]> Clickhouse: ETL
+note right: Данные передаются пачками
 end
 
 
+User -[#green]> Clickhouse: Аналитический запрос
+activate Clickhouse
+Clickhouse -[#lightblue]> Clickhouse: Расчеты
+Clickhouse -[#lightblue]> User: Ответ
+deactivate Clickhouse
+
+User -[#green]> Clickhouse: Аналитический запрос
+activate Clickhouse
+Clickhouse -[#lightblue]> Clickhouse: Расчеты
+Clickhouse -[#lightblue]> User: Ответ
+deactivate Clickhouse
 
 @enduml
