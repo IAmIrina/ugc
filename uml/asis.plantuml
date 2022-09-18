@@ -3,17 +3,21 @@ skinparam componentStyle uml2
 
 title Приложение Movies 'AS IS'
 
+component AdminPanel #Yellow
 
-component AdminPanel
-
-database "Elastic: Полнотекстовый поиск" as ElasticSearch #Lightblue
-database "Redis: Кэширование" as RedisSearchCashing #Red
-
-database "БД Фильмов" as PostgreMovies {
+' База Данных Фильмов
+database "Postgre БД Фильмов" as PostgreMovies #Lightblue {
 component FilmworkTable
 component GenreTable
 component PersonTable
+component GenreFilmworkTable
+component PersonFilmworkTable
 }
+
+database "Elastic: Полнотекстовый поиск" as ElasticSearch #Lightblue
+database "Redis" as RedisSearchCashing #Red
+
+
 
 ' Компоненты FastAPI
 component FastApi #Green
@@ -28,16 +32,19 @@ component Jaeger #Orange
 component "OAuth 2.0" as OAuth #Blue
 }
 
+
 cloud "Провайдеры" as Providers
 
 interface AuthApi #Yellow
 
 
 ' Взаимодействия
-AdminPanel <-[#red]> PostgreMovies
+AdminPanel <--> PostgreMovies
 
-ElasticSearch -> PostgreMovies: ETL
-ElasticSearch --> RedisSearchCashing: Кэширование
+ElasticSearch <-- PostgreMovies: "ETL System" 
+ElasticSearch <--> RedisSearchCashing: Кэширование
+ElasticSearch -up-> FastApi
+
 SearchInterface <- FastApi
 
 ' Взаимодействия внутри AuthService
@@ -52,5 +59,6 @@ FlaskAuth <-- PostgreUsers
 FlaskAuth <-- RedisTokens
 
 OAuth .> Providers
+
 
 @enduml
