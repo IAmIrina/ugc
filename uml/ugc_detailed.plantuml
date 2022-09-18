@@ -1,0 +1,32 @@
+@startuml
+skinparam componentStyle uml2
+skinparam backgroundColor #EEEBDC
+skinparam responseMessageBelowArrow true
+
+title Детальная схема UGC 
+
+' Участники
+actor User #Yellow
+participant Clickhouse #Lightblue
+participant ETL #Green
+participant Kafka #Red
+
+' Взаимодействия
+== Initialization ==
+Kafka -> ETL: "Есть изменения"
+
+== Обработка запроса ==
+User -> Clickhouse: Аналитический запрос
+Clickhouse <-> ETL: Получает данные
+
+== Misc ==
+
+alt#Gold #LightBlue Successful case
+    Clickhouse -> Kafka: Authentication Accepted
+else #Pink Failure
+    Clickhouse -> Kafka: Authentication Rejected
+end
+
+
+
+@enduml
