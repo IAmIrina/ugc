@@ -3,21 +3,26 @@ skinparam componentStyle uml2
 
 title Приложение Movies 'AS IS'
 
+component AdminPanel #Yellow
 
-component AdminPanel
-
-database "Elastic: Полнотекстовый поиск" as ElasticSearch #Lightblue
-database "Redis: Кэширование" as RedisSearchCashing #Red
-
-database "БД Фильмов" as PostgreMovies {
+' База Данных Фильмов
+database "Postgre БД Фильмов" as PostgreMovies #Lightblue {
 component FilmworkTable
 component GenreTable
 component PersonTable
+component GenreFilmworkTable
+component PersonFilmworkTable
 }
+
+database "Elastic: Полнотекстовый поиск" as ElasticSearch #Lightblue
+database "Redis" as RedisSearchCashing #Red
+
+
 
 ' Компоненты FastAPI
 component FastApi #Green
 interface SearchInterface #Green
+interface "Просмотры Пользователей" as ViewsInterface #Green
 
 ' Компоненты сервиса аутентификации
 package AuthService {
@@ -35,8 +40,10 @@ note right
 Содержит топик 'views'
 Партицирована по ключу 'user_id+movie_id'
 end note
-component OLAP
+component "OLAP: Clickhouse" as CH
 }
+
+interface "Просмотры пользователя" as GetViews #Yellow
 
 cloud "Провайдеры" as Providers
 
@@ -44,11 +51,14 @@ interface AuthApi #Yellow
 
 
 ' Взаимодействия
-AdminPanel <-[#red]> PostgreMovies
+AdminPanel <--> PostgreMovies
 
-ElasticSearch -down-> PostgreMovies: ETL
-ElasticSearch --> RedisSearchCashing: Кэширование
+ElasticSearch <-- PostgreMovies: "ETL System" 
+ElasticSearch <--> RedisSearchCashing: Кэширование
+ElasticSearch -up-> FastApi
+
 SearchInterface <- FastApi
+ViewsInterface <-- FastApi
 
 ' Взаимодействия внутри AuthService
 AuthService -[thickness=2]> AuthApi: Интерфейс
@@ -62,5 +72,10 @@ FlaskAuth <-- PostgreUsers
 FlaskAuth <-- RedisTokens
 
 OAuth .> Providers
+
+' Взаимодействия UGC
+Kafka --> ViewsInterface
+Kafka -left-> CH
+CH -left-> GetViews
 
 @enduml
