@@ -1,7 +1,7 @@
 @startuml
 skinparam componentStyle uml2
 
-title Приложение Movies 'AS IS'
+title Приложение Movies 'TO BE'
 
 component AdminPanel #Yellow
 
@@ -22,7 +22,7 @@ database "Redis" as RedisSearchCashing #Red
 ' Компоненты FastAPI
 component FastApi #Green
 interface SearchInterface #Green
-interface "Просмотры Пользователей" as ViewsInterface #Green
+interface "API Просмотров Фильмов" as ViewsInterface #Green
 
 ' Компоненты сервиса аутентификации
 package AuthService {
@@ -42,8 +42,6 @@ note right
 end note
 component "OLAP: Clickhouse" as CH
 }
-
-interface "Просмотры пользователя" as GetViews #Yellow
 
 cloud "Провайдеры" as Providers
 
@@ -75,7 +73,6 @@ OAuth .> Providers
 
 ' Взаимодействия UGC
 Kafka --> ViewsInterface
-Kafka -left-> CH
-CH -left-> GetViews
+Kafka -left-> CH: ETL
 
 @enduml
