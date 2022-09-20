@@ -1,0 +1,19 @@
+[tool.poetry]
+name = "Analitic Database Benchmart"
+version = "0.1.0"
+description = ""
+authors = ["IAmIrina <irina.vl.kiseleva@gmail.com>"]
+
+[tool.poetry.dependencies]
+python = "^3.8"
+clickhouse-driver = "^0.2.4"
+vertica-python = "^1.1.1"
+pydantic = "^1.10.2"
+
+[tool.poetry.dev-dependencies]
+autopep8 = "^1.7.0"
+flake8 = "^5.0.4"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
