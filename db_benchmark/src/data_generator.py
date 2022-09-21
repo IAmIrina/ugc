@@ -1,13 +1,10 @@
-# event_time DateTime,
-# user_id UUID,
-# movie_id String,
-# viewed_frame Int64
 import os
 import time
 from datetime import datetime
 import uuid
 from random import randint
 import csv
+
 
 COUNT_OF_USERS = 200000
 COUNT_OF_MOVIES = 5000
@@ -18,9 +15,9 @@ MAX_MOVIE_DURATION_FRAMES = 10800
 START_DATE = '2022-01-01'
 STOP_DATE = '2022-02-01'
 START_TIME_INTERVAL = time.mktime(datetime.strptime(START_DATE, "%Y-%d-%m").timetuple())
-STOP_TIME_INTERVAL = time.mktime(datetime.strptime(START_DATE, "%Y-%d-%m").timetuple())
+STOP_TIME_INTERVAL = time.mktime(datetime.strptime(STOP_DATE, "%Y-%d-%m").timetuple())
 
-DATA_FILE = 'data/frames.csv'
+DATA_FILE = os.getenv('LOCAL_CSV_FILE', '/etc/benchmark_data/frames.csv')
 
 users = [str(uuid.uuid4()) for _ in range(COUNT_OF_USERS)]
 

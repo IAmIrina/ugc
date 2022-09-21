@@ -1,0 +1,31 @@
+version: '3.5'
+
+services:
+  vertica1:
+    image: jbfavre/vertica:latest
+    links:
+      - "vertica2:vertica2"      
+    hostname: vertica1
+    volumes:    
+      - ./src/data:/etc/benchmark_data
+      - ./vertica-cluster/vertica/files:/etc/vertica
+    ports:
+      - "33522:22"
+      - "5433:5433"
+      - "5444:5444"
+      - "5450:5450"
+    command: "/home/dbadmin/docker-entrypoint.sh -mc -cluster"
+  vertica2:
+    image: jbfavre/vertica:latest
+    hostname: vertica2
+    volumes:        
+      - ./vertica-cluster/vertica/files:/etc/vertica
+    ports:
+      - "33523:22"
+      - "15433:5433"
+      - "15444:5444"
+    command: "/home/dbadmin/docker-entrypoint.sh"
+  
+
+
+

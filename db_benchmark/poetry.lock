@@ -76,6 +76,7 @@ optional = false
 python-versions = ">=3.7"
 
 [package.dependencies]
+python-dotenv = {version = ">=0.10.4", optional = true, markers = "extra == \"dotenv\""}
 typing-extensions = ">=4.1.0"
 
 [package.extras]
@@ -100,6 +101,17 @@ python-versions = "!=3.0.*,!=3.1.*,!=3.2.*,>=2.7"
 
 [package.dependencies]
 six = ">=1.5"
+
+[[package]]
+name = "python-dotenv"
+version = "0.21.0"
+description = "Read key-value pairs from a .env file and set them as environment variables"
+category = "main"
+optional = false
+python-versions = ">=3.7"
+
+[package.extras]
+cli = ["click (>=5.0)"]
 
 [[package]]
 name = "pytz"
@@ -185,7 +197,7 @@ six = ">=1.10.0"
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8"
-content-hash = "e9c13f522edc86be26f24a2f877d40ceed801e32d64ed5cc86a7287c8ca61801"
+content-hash = "ad123ffa38250ed09a17a22d8108874a258b9b69f945fe2b08197feee0f3952a"
 
 [metadata.files]
 autopep8 = []
@@ -197,6 +209,7 @@ pycodestyle = []
 pydantic = []
 pyflakes = []
 python-dateutil = []
+python-dotenv = []
 pytz = []
 pytz-deprecation-shim = []
 six = [

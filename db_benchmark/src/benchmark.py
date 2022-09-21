@@ -1,12 +1,23 @@
-from clickhouse.readwrite import write_and_read
+from readwrite import write_and_read
 import logging
+import clickhouse.engine
+import vertica.engine
+from settings.config import settings
 
 logging.basicConfig(level=logging.INFO)
 
 if __name__ == '__main__':
-    # for i in range(1, 5):
-    #     only_reading(i)
 
-    for write in range(0, 2):
-        for read in range(1, 6):
-            write_and_read(read, write)
+    write_and_read(settings.read_threads,
+                   settings.write_threads,
+                   clickhouse.engine.DataInfo,
+                   'CLICKHOUSE',
+                   clickhouse.engine.BenchmarkWrite,
+                   clickhouse.engine.BenchmarkRead)
+
+    write_and_read(settings.read_threads,
+                   settings.write_threads,
+                   vertica.engine.DataInfo,
+                   'VERTICA',
+                   vertica.engine.BenchmarkWrite,
+                   vertica.engine.BenchmarkRead)

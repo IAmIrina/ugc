@@ -1,0 +1,22 @@
+version: '3.5'
+
+services:
+  clickhouse-single-node:
+    image: yandex/clickhouse-server
+    container_name: clickhouse-single-node
+    hostname: clickhouse-single-node
+    ulimits:
+      nproc: 65535
+      nofile:
+        soft: 262144
+        hard: 262144
+    ports:
+      - "8123:8123"
+      - "9000:9000"    
+    volumes:      
+      - ./src/clickhouse/settings/singlenode:/docker-entrypoint-initdb.d
+      - ./src/data:/etc/benchmark_data
+    # client:
+    #   image: yandex/clickhouse-client
+    #   command: ['--host', 'server']
+

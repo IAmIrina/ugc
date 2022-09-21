@@ -8,7 +8,7 @@ authors = ["IAmIrina <irina.vl.kiseleva@gmail.com>"]
 python = "^3.8"
 clickhouse-driver = "^0.2.4"
 vertica-python = "^1.1.1"
-pydantic = "^1.10.2"
+pydantic = {extras = ["dotenv"], version = "^1.10.2"}
 
 [tool.poetry.dev-dependencies]
 autopep8 = "^1.7.0"
