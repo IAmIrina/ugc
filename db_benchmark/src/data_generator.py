@@ -17,7 +17,7 @@ STOP_DATE = '2022-02-01'
 START_TIME_INTERVAL = time.mktime(datetime.strptime(START_DATE, "%Y-%d-%m").timetuple())
 STOP_TIME_INTERVAL = time.mktime(datetime.strptime(STOP_DATE, "%Y-%d-%m").timetuple())
 
-DATA_FILE = os.getenv('LOCAL_CSV_FILE', '/etc/benchmark_data/frames.csv')
+DATA_FILE = os.getenv('LOCAL_CSV_FILE', 'src/data/frames.csv')
 
 users = [str(uuid.uuid4()) for _ in range(COUNT_OF_USERS)]
 
