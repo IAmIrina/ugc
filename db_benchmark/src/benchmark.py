@@ -15,9 +15,9 @@ if __name__ == '__main__':
                    clickhouse.engine.BenchmarkWrite,
                    clickhouse.engine.BenchmarkRead)
 
-    write_and_read(settings.read_threads,
-                   settings.write_threads,
-                   vertica.engine.DataInfo,
-                   'VERTICA',
-                   vertica.engine.BenchmarkWrite,
-                   vertica.engine.BenchmarkRead)
+    # write_and_read(settings.read_threads,
+    #                settings.write_threads,
+    #                vertica.engine.DataInfo,
+    #                'VERTICA',
+    #                vertica.engine.BenchmarkWrite,
+    #                vertica.engine.BenchmarkRead)
