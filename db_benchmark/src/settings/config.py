@@ -1,5 +1,6 @@
-from pydantic import BaseSettings
 from pathlib import Path
+
+from pydantic import BaseSettings
 
 
 class DotEnvMixin(BaseSettings):
@@ -17,7 +18,7 @@ class Vertica(DotEnvMixin):
 
 
 class Clickhouse(DotEnvMixin):
-    host: str = 'localhost'
+    host: str = 'localhost'  # '10.129.0.6'  # '10.129.0.9' - cluster
 
 
 def get_params(cls, env_prefix_name: str):
@@ -29,17 +30,19 @@ def get_params(cls, env_prefix_name: str):
 
 class Settings(DotEnvMixin):
 
-    clickhouse: Clickhouse = get_params(Clickhouse, 'clickhouse')
+    clickhouse_singlenode: Clickhouse = get_params(Clickhouse, 'clickhouse_single')
+    clickhouse_cluster: Clickhouse = get_params(Clickhouse, 'clickhouse_cluster')
     vertica: Vertica = get_params(Vertica, 'vertica')
-    read_threads: int = 3
+    read_threads: int = 25
     write_threads: int = 1
-    read_itterations: int = 10
-    write_itterations: int = 10
+    read_itterations: int = 5
+    write_itterations: int = 5
     data_file: str = 'data/frames.csv'
     local_csv_file: str = '/etc/benchmark_data/frames.csv'
-
+    report_file: str = 'report.txt'
     limit: int = 10
 
 
 settings = Settings()
 settings.data_file = str(Path(__file__).parent.parent / f'{settings.data_file}')
+settings.report_file = str(Path(__file__).parent.parent / f'{settings.report_file}')

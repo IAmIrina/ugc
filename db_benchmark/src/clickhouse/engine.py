@@ -1,13 +1,14 @@
-from clickhouse_driver import Client
-from utils.timers import timer
-from utils.backoff import backoff
 import logging
-from settings.config import settings
+
+from clickhouse_driver import Client
+
+from utils.backoff import backoff
+from utils.timers import timer
 
 
 @backoff()
-def connect():
-    client = Client(host=settings.clickhouse.host)
+def connect(connection_params):
+    client = Client(host=connection_params.host)
     count = client.execute('Select count (*) FROM default.metrics LIMIT 1')[0][0]
     if count < 10000000:
         logging.info('Datacount less than minimum number')
@@ -17,8 +18,8 @@ def connect():
 
 class DataInfo:
 
-    def __init__(self):
-        self.client = connect()
+    def __init__(self, connection_params):
+        self.client = connect(connection_params)
         self.record_count = self.count_of_record()
         self.user_id = self.get_user_id()
         self.movie_id = self.get_movie_id()
@@ -38,8 +39,8 @@ class DataInfo:
 
 class BenchmarkRead:
 
-    def __init__(self, user_id, movie_id, limit):
-        self.client = connect()
+    def __init__(self, connection_params, user_id, movie_id, limit):
+        self.client = connect(connection_params)
         self.user_id = user_id
         self.movie_id = movie_id
         self.limit = limit
@@ -77,8 +78,8 @@ class BenchmarkRead:
 
 
 class BenchmarkWrite:
-    def __init__(self):
-        self.client = connect()
+    def __init__(self, connection_params):
+        self.client = connect(connection_params)
 
     @timer
     def write_record(self, row):

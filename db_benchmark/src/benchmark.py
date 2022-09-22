@@ -1,23 +1,49 @@
-from readwrite import write_and_read
 import logging
+
 import clickhouse.engine
 import vertica.engine
+from readwrite import load
 from settings.config import settings
 
 logging.basicConfig(level=logging.INFO)
 
+tests = [
+    (
+        settings.read_threads,
+        settings.write_threads,
+        'CLICKHOUSE CLUSTER',
+        settings.clickhouse_cluster,
+        clickhouse.engine.DataInfo,
+        clickhouse.engine.BenchmarkWrite,
+        clickhouse.engine.BenchmarkRead
+    ),
+    (
+        settings.read_threads,
+        settings.write_threads,
+        'CLICKHOUSE_SINGLE_NODE',
+        settings.clickhouse_singlenode,
+        clickhouse.engine.DataInfo,
+        clickhouse.engine.BenchmarkWrite,
+        clickhouse.engine.BenchmarkRead
+    ),
+    (
+        settings.read_threads,
+        settings.write_threads,
+        'VERTICA',
+        settings.vertica.dict(),
+        vertica.engine.DataInfo,
+        vertica.engine.BenchmarkWrite,
+        vertica.engine.BenchmarkRead
+    )
+]
+
+
 if __name__ == '__main__':
 
-    write_and_read(settings.read_threads,
-                   settings.write_threads,
-                   clickhouse.engine.DataInfo,
-                   'CLICKHOUSE',
-                   clickhouse.engine.BenchmarkWrite,
-                   clickhouse.engine.BenchmarkRead)
+    results = []
+    for test in tests:
+        logging.info('Started: %s', test[3])
+        results.append(load(*test))
 
-    # write_and_read(settings.read_threads,
-    #                settings.write_threads,
-    #                vertica.engine.DataInfo,
-    #                'VERTICA',
-    #                vertica.engine.BenchmarkWrite,
-    #                vertica.engine.BenchmarkRead)
+    with open(settings.report_file, 'w') as f:
+        f.write(''.join(results))

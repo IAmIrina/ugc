@@ -1,0 +1,10 @@
+version: '3.4'
+
+services:
+    benchmark:
+        container_name: benchmark
+        build: ./
+        env_file:
+          - .env
+
+

@@ -1,10 +1,9 @@
+import csv
 import os
 import time
-from datetime import datetime
 import uuid
+from datetime import datetime
 from random import randint
-import csv
-
 
 COUNT_OF_USERS = 200000
 COUNT_OF_MOVIES = 5000

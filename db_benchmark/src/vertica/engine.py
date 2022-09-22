@@ -1,11 +1,14 @@
+import logging
+
 import vertica_python
-from utils.timers import timer
-from settings.config import settings
+
 from utils.backoff import backoff
+from utils.timers import timer
 
-connection_info = settings.vertica.dict()
 
-with vertica_python.connect(**connection_info) as connection:
+@backoff()
+def copy_csv_data(connection_params):
+    connection = vertica_python.connect(**connection_params)
     cursor = connection.cursor('dict')
     cursor.execute("""
     CREATE TABLE  IF NOT EXISTS metrics (
@@ -13,38 +16,34 @@ with vertica_python.connect(**connection_info) as connection:
         user_id UUID NOT NULL,
         movie_id VARCHAR(256) NOT NULL,
         viewed_frame INTEGER NOT NULL
-    );
+    )
+    ORDER BY user_id, movie_id
+    PARTITION BY ((DATE_PART('DAY', event_time))::int);
     """)
 
-
-@backoff()
-def db_filler():
-    connection = vertica_python.connect(**connection_info)
-    cursor = connection.cursor('dict')
     cursor.execute("""
     SELECT count(*) as count_of_records FROM metrics;
     """)
     row = cursor.fetchone()
+    print(row)
     if (row['count_of_records']) < 10000000:
         cursor.execute("""TRUNCATE TABLE metrics""")
-        print('Veritca copy data from csv')
+        logging.info('Copy data to Vertica from csv')
         cursor.execute("COPY metrics(unix_timestamp FILLER VARCHAR(15), event_time as TO_TIMESTAMP(unix_timestamp), user_id, movie_id, viewed_frame) FROM"
                        " '/etc/benchmark_data/frames.csv' DELIMITER ','"
                        " REJECTED DATA '/home/dbadmin/rejects.txt'"
                        " EXCEPTIONS '/home/dbadmin/exceptions.txt'",
                        buffer_size=65536
                        )
-        print('Vertica finished copy data from csv')
+        logging.info('Data coping is finished.')
     connection.close()
-
-
-db_filler()
 
 
 class DataInfo:
 
-    def __init__(self):
-        self.connection = vertica_python.connect(**connection_info)
+    def __init__(self, connection_params):
+        copy_csv_data(connection_params)
+        self.connection = vertica_python.connect(**connection_params)
         self.client = self.connection.cursor('dict')
         self.record_count = self.count_of_record()
         self.user_id = self.get_user_id()
@@ -55,6 +54,7 @@ class DataInfo:
 
     def get_user_id(self):
         user = self.client.execute('Select user_id FROM metrics LIMIT 1').fetchone()
+        print(user)
         return user['user_id']
 
     def get_movie_id(self):
@@ -71,8 +71,8 @@ class DataInfo:
 
 class BenchmarkRead:
 
-    def __init__(self, user_id, movie_id, limit):
-        self.connection = vertica_python.connect(**connection_info)
+    def __init__(self, connection_params, user_id, movie_id, limit):
+        self.connection = vertica_python.connect(**connection_params)
         self.client = self.connection.cursor('dict')
         self.movie_id = movie_id
         self.user_id = user_id
@@ -109,8 +109,8 @@ class BenchmarkRead:
 
 
 class BenchmarkWrite:
-    def __init__(self):
-        self.connection = vertica_python.connect(**connection_info)
+    def __init__(self, connection_params):
+        self.connection = vertica_python.connect(**connection_params)
         self.client = self.connection.cursor('dict')
 
     @timer
