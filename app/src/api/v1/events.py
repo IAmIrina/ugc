@@ -1,8 +1,8 @@
 from fastapi import APIRouter, Depends
 
-from app.src.api.v1.schemas import UGCEventPosted, UGCEvent, UGCUserEvent
-from app.src.services.auth import JWTBearer, User
-from app.src.services.events import get_events_service, EventsService
+from src.api.v1.schemas import UGCEventPosted, UGCEvent, UGCUserEvent
+from src.services.auth import JWTBearer, User
+from src.services.events import get_events_service, EventsService
 
 router = APIRouter()
 

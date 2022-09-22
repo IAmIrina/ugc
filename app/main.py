@@ -3,9 +3,9 @@ from aiokafka import AIOKafkaProducer
 from fastapi import FastAPI
 from fastapi.responses import ORJSONResponse
 
-from app.src.api.v1 import events
-from app.src.core.config import api_settings, kafka_settings
-from app.src.db import kafka
+from src.api.v1 import events
+from src.core.config import api_settings, kafka_settings
+from src.db import kafka
 
 app = FastAPI(
     title=api_settings.project_name,

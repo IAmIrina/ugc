@@ -5,9 +5,9 @@ from functools import lru_cache
 from aiokafka import AIOKafkaProducer
 from fastapi import Depends
 
-from app.src.api.v1.schemas import UGCEventPosted, UGCUserEvent
-from app.src.core.config import api_settings
-from app.src.db.kafka import get_kafka
+from src.api.v1.schemas import UGCEventPosted, UGCUserEvent
+from src.core.config import api_settings
+from src.db.kafka import get_kafka
 
 module_logger = logging.getLogger('EventsService')
 
