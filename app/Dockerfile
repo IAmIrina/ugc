@@ -14,5 +14,6 @@ RUN pip install --no-cache-dir --upgrade -r /app/requirements.txt
 COPY src /app/src
 COPY main.py main.py
 COPY wait-services.sh wait-services.sh
+RUN chmod +x wait-services.sh
 
 CMD ["./wait-services.sh", "uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
