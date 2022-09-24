@@ -1,17 +1,18 @@
-from models import KafkaSchema
+from models import ConsumedMessage
 
 
-async def transform_kafka_record(record: dict) -> KafkaSchema:
-    """Преобразует список записей из Kafka в валидированный список для ClickHouse"""
-    for msg in record.values():
-        struct = msg[0]
-        schema = KafkaSchema(
-            key=struct.key,
-            movie_sec=struct.value['movie_sec'],
-            movie_id=struct.value['movie_id'],
-            user_id=struct.value['user_id'],
-            posted_at=struct.value['posted_at'],
+async def transform_kafka_record(batch: list) -> list[ConsumedMessage]:
+    """Преобразует список сообщений из Kafka в валидированный список датаклассов"""
+    validated_models = []
+    for message in batch:
+        validated_models.append(
+            ConsumedMessage(
+                key=message.key,
+                movie_sec=message.value['movie_sec'],
+                movie_id=message.value['movie_id'],
+                user_id=message.value['user_id'],
+                posted_at=message.value['posted_at'],
+            )
         )
 
-    return schema
-
+    return validated_models

@@ -3,24 +3,28 @@ import asyncio
 
 from utils import bytes_to_dict_deserializer
 from transformers import transform_kafka_record
+from consumers import get_consumer
 
-async def main():
-    consumer = aiokafka.AIOKafkaConsumer(
-        "views",
-        bootstrap_servers='0.0.0.0:9092',
-        value_deserializer=bytes_to_dict_deserializer,
-    )
-    await consumer.start()
+async def etl_script():
+    consumer = await get_consumer()
+
     try:
         while True:
-            result = await consumer.getmany(timeout_ms=5 * 1000)
-            if result:
-                transformed = await transform_kafka_record(result)
-                print(transformed)
+            batch = []
+            async for msg in consumer:
+                batch.append(msg)
+                if len(batch) == 3:
+                    await consumer.commit()
+                    transformed = await transform_kafka_record(batch)
+                    print(transformed)
+                    batch = []
+
+            #     transformed =
+            #     print(transformed)
     finally:
         # Не забываем останавливать Consumer
         await consumer.stop()
 
 
 if __name__ == "__main__":
-    asyncio.run(main())
+    asyncio.run(etl_script())
