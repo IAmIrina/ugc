@@ -7,20 +7,16 @@ from consumers import get_consumer
 
 async def etl_script():
     consumer = await get_consumer()
-
     try:
-        while True:
-            batch = []
-            async for msg in consumer:
-                batch.append(msg)
-                if len(batch) == 3:
-                    await consumer.commit()
-                    transformed = await transform_kafka_record(batch)
-                    print(transformed)
-                    batch = []
+        batch = []
+        async for msg in consumer:
+            batch.append(msg)
+            if len(batch) == 3:
+                await consumer.commit()
+                transformed = await transform_kafka_record(batch)
+                print(transformed)
 
-            #     transformed =
-            #     print(transformed)
+                batch = []
     finally:
         # Не забываем останавливать Consumer
         await consumer.stop()
