@@ -1,12 +1,12 @@
-from models import ClickhouseModel, ConsumedMessage
+from models import ConsumedMessage
 from clickhouse_driver import Client
 
+from settings import clickhouse_settings
 
 def clickhouse_connect():
-    client = Client(host="0.0.0.0")
+    client = Client(host=clickhouse_settings.host)
 
     return client
-
 
 def load_data_to_clickhouse(batch: list[ConsumedMessage], clickhouse_client: Client) -> None:
     """Загружает список сообщений в Clickhouse"""

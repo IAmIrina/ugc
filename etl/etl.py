@@ -1,8 +1,12 @@
 import asyncio
+import logging
 
 from transformers import transform_kafka_record
 from consumers import get_kafka_consumer
 from loaders import clickhouse_connect, load_data_to_clickhouse
+from settings import etl_settings
+
+logger = logging.getLogger()
 
 async def etl_script():
     consumer = await get_kafka_consumer()
@@ -11,7 +15,7 @@ async def etl_script():
         batch = []
         async for msg in consumer:
             batch.append(msg)
-            if len(batch) == 2:
+            if len(batch) == etl_settings.batch_size:
                 await consumer.commit()
                 # Трансформируем сообщения из Kafka
                 transformed = await transform_kafka_record(batch)

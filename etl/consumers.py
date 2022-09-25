@@ -1,17 +1,17 @@
 import logging
+import time
 
 from aiokafka import AIOKafkaConsumer
-from aiokafka.errors import KafkaError
 
-from utils import bytes_to_dict_deserializer
+from utils import bytes_to_dict_deserializer, backoff
 from settings import kafka_settings
 
 
 logger = logging.getLogger()
 
-
 async def get_kafka_consumer(topic: str = "views") -> AIOKafkaConsumer:
     """Подсоединяется к определенному топику и возвращает инстанc Consumer"""
+    time.sleep(10)
     try:
         consumer = AIOKafkaConsumer(
             topic,
@@ -22,6 +22,7 @@ async def get_kafka_consumer(topic: str = "views") -> AIOKafkaConsumer:
             value_deserializer=bytes_to_dict_deserializer,
         )
         await consumer.start()
+        logger.warning("Consumer Created")
         return consumer
-    except KafkaError as error:
-        logger.error(f"Ошибка: Ошибка создания Kafka-Консьюмера ({error})")
+    except Exception:
+        logger.warning("Consumer Creation Error")

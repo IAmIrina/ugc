@@ -45,4 +45,11 @@ services:
     depends_on:
       - kafka
 
-    etl:
+  etl:
+    container_name: kafka-etl
+    build: ./etl
+    env_file:
+      - ./.env
+    depends_on:
+      - kafka
+      - fastapi
