@@ -44,3 +44,12 @@ services:
       - 8002:8000
     depends_on:
       - kafka
+
+  etl:
+    container_name: kafka-etl
+    build: ./etl
+    env_file:
+      - ./.env
+    depends_on:
+      - kafka
+      - fastapi

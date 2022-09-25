@@ -20,7 +20,7 @@ class ApiSettings(MainSettings):
 
 
 class KafkaSettings(MainSettings):
-    kafka_host: str = '127.0.0.1'
+    kafka_host: str = 'kafka'
     kafka_port: int = 9092
 
 
