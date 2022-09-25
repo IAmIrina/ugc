@@ -1,0 +1,4 @@
+asyncio==3.4.3
+aiokafka==0.7.2
+clickhouse-driver==0.2.4
+pydantic==1.10.2

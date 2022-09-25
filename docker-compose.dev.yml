@@ -44,3 +44,5 @@ services:
       - 8002:8000
     depends_on:
       - kafka
+
+    etl:
