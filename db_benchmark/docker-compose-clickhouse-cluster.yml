@@ -26,6 +26,7 @@ services:
     hostname: clickhouse-node2
     volumes:
       - ./src/clickhouse/settings/node2:/etc/clickhouse-server
+      - ./src/clickhouse/settings/node2/init:/docker-entrypoint-initdb.d
     depends_on:
       - zookeeper
 
@@ -45,5 +46,6 @@ services:
     hostname: clickhouse-node4
     volumes:
       - ./src/clickhouse/settings/node4:/etc/clickhouse-server
+      - ./src/clickhouse/settings/node4/init:/docker-entrypoint-initdb.d
     depends_on:
       - zookeeper
