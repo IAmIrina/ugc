@@ -44,7 +44,7 @@
                 </replica>
                 <replica>
                     <default_database>replica</default_database>
-                    <host>clickhouse-node2</host>
+                    <host>clickhouse-node4</host>
                     <port>9000</port>
                 </replica>
             </shard>
@@ -56,7 +56,7 @@
                 </replica>
                 <replica>
                     <default_database>replica</default_database>
-                    <host>clickhouse-node4</host>
+                    <host>clickhouse-node2</host>
                     <port>9000</port>
                 </replica>
             </shard>
