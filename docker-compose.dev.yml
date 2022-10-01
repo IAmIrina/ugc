@@ -53,6 +53,7 @@ services:
     depends_on:
       - kafka
       - fastapi
+      - clickhouse-node1
 
   clickhouse-zookeeper:
     image: zookeeper:3.5
