@@ -53,3 +53,51 @@ services:
     depends_on:
       - kafka
       - fastapi
+
+  clickhouse-zookeeper:
+    image: zookeeper:3.5
+    container_name: clickhouse-zookeeper
+    hostname: clickhouse-zookeeper
+
+  clickhouse-node1:
+    image: yandex/clickhouse-server:20.4
+    container_name: clickhouse-node1
+    hostname: clickhouse-node1
+    ports:
+      - "8123:8123"
+      - "9000:9000"
+    volumes:
+      - ./clickhouse/node1:/etc/clickhouse-server
+      - ./clickhouse/node1/init:/docker-entrypoint-initdb.d
+    depends_on:
+      - clickhouse-zookeeper
+
+  clickhouse-node2:
+    image: yandex/clickhouse-server:20.4
+    container_name: clickhouse-node2
+    hostname: clickhouse-node2
+    volumes:
+      - ./clickhouse/node2/init:/docker-entrypoint-initdb.d
+      - ./clickhouse/node2:/etc/clickhouse-server
+    depends_on:
+      - clickhouse-zookeeper
+
+  clickhouse-node3:
+    image: yandex/clickhouse-server:20.4
+    container_name: clickhouse-node3
+    hostname: clickhouse-node3
+    volumes:
+      - ./clickhouse/node3/init:/docker-entrypoint-initdb.d
+      - ./clickhouse/node3:/etc/clickhouse-server
+    depends_on:
+      - clickhouse-zookeeper      
+
+  clickhouse-node4:
+    image: yandex/clickhouse-server:20.4
+    container_name: clickhouse-node4
+    hostname: clickhouse-node4
+    volumes:
+      - ./clickhouse/node4/init:/docker-entrypoint-initdb.d
+      - ./clickhouse/node4:/etc/clickhouse-server
+    depends_on:
+      - clickhouse-zookeeper
