@@ -16,11 +16,11 @@ async def etl_script():
         async for msg in consumer:
             batch.append(msg)
             if len(batch) == etl_settings.batch_size:
-                await consumer.commit()
                 # Трансформируем сообщения из Kafka
                 transformed = await transform_kafka_record(batch)
                 # Загружаем данные в Clickhouse
                 load_data_to_clickhouse(transformed, clickhouse_client)
+                await consumer.commit()
                 batch = []
     finally:
         # Не забываем останавливать Consumer
