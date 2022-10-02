@@ -1,12 +1,13 @@
 import asyncio
 import logging
 
-from transformers import transform_kafka_record
 from consumers import get_kafka_consumer
 from loaders import clickhouse_connect, load_data_to_clickhouse
 from settings import etl_settings
+from transformers import transform_kafka_record
 
 logger = logging.getLogger()
+
 
 async def etl_script():
     consumer = await get_kafka_consumer()

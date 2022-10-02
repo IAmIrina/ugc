@@ -29,7 +29,7 @@ def backoff(start_sleep_time=0.1, factor=2, border_sleep_time=10):
                 try:
                     return func(*args, **kwargs)
                 except Exception as e:
-                    logging.debug("Получена ошибка соединения. Используем Backoff")
+                    logging.debug("Connection error. Use Backoff_________________________________________________")
                     logging.debug(e)
                     time.sleep(next_sleep_time)
                     if next_sleep_time >= border_sleep_time:
