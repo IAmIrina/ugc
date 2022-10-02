@@ -1,0 +1,36 @@
+@startuml
+skinparam componentStyle uml2
+skinparam backgroundColor #EEEBDC
+skinparam responseMessageBelowArrow true
+
+title Детальная схема UGC 
+
+' Участники
+actor Frontend #Brown
+actor "Аналитик" as User #Green
+database Clickhouse #Lightblue
+participant Kafka #Red
+
+
+' Взаимодействия
+Frontend -[#brown]> Kafka: Информация о просмотрах фильмов
+note right: Ежесекундно/ежеминутно
+loop ∞
+Kafka -[#red]> Clickhouse: ETL
+note right: Данные передаются пачками
+end
+
+
+User -[#green]> Clickhouse: Аналитический запрос
+activate Clickhouse
+Clickhouse -[#lightblue]> Clickhouse: Расчеты
+Clickhouse -[#lightblue]> User: Ответ
+deactivate Clickhouse
+
+User -[#green]> Clickhouse: Аналитический запрос
+activate Clickhouse
+Clickhouse -[#lightblue]> Clickhouse: Расчеты
+Clickhouse -[#lightblue]> User: Ответ
+deactivate Clickhouse
+
+@enduml

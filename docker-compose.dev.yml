@@ -1,0 +1,104 @@
+version: "3.8"
+services:
+  zookeeper:
+    image: bitnami/zookeeper:3.8.0
+    restart: on-failure
+    ports:
+      - "2181:2181"
+    environment:
+      ZOO_MY_ID: 1
+      ZOO_PORT: 2181
+      ZOO_SERVERS: server.1=zookeeper:2888:3888
+      ALLOW_ANONYMOUS_LOGIN: "yes"
+
+  kafka:
+    image: bitnami/kafka:3.2.3
+    restart: on-failure
+    ports:
+      - "9092:9092"
+    environment:
+      KAFKA_ADVERTISED_LISTENERS: INTERNAL://kafka:29092,EXTERNAL://localhost:9092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: INTERNAL:PLAINTEXT,EXTERNAL:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: INTERNAL
+      KAFKA_ZOOKEEPER_CONNECT: "zookeeper:2181"
+      KAFKA_BROKER_ID: 1
+      KAFKA_LOG4J_LOGGERS: "kafka.controller=INFO,kafka.producer.async.DefaultEventHandler=INFO,state.change.logger=INFO"
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_CFG_ZOOKEEPER_CONNECT: zookeeper:2181
+      ALLOW_PLAINTEXT_LISTENER: "yes"
+      KAFKA_LISTENERS: "INTERNAL://:29092,EXTERNAL://:9092"
+      KAFKA_ZOOKEEPER_SESSION_TIMEOUT: "6000"
+      KAFKA_RESTART_ATTEMPTS: "10"
+      KAFKA_RESTART_DELAY: "5"
+      ZOOKEEPER_AUTOPURGE_PURGE_INTERVAL: "0"
+    depends_on:
+      - zookeeper
+
+  fastapi:
+    container_name: fastapi-container
+    build:
+      context: ./app/
+    env_file:
+      - ./.env
+    ports:
+      - 8002:8000
+    depends_on:
+      - kafka
+
+  etl:
+    container_name: kafka-etl
+    build: ./etl
+    env_file:
+      - ./.env
+    depends_on:
+      - kafka
+      - fastapi
+      - clickhouse-node1
+
+  clickhouse-zookeeper:
+    image: zookeeper:3.5
+    container_name: clickhouse-zookeeper
+    hostname: clickhouse-zookeeper
+
+  clickhouse-node1:
+    image: yandex/clickhouse-server:21.3.20.1-alpine
+    container_name: clickhouse-node1
+    hostname: clickhouse-node1
+    ports:
+      - "8123:8123"
+      - "9000:9000"
+    volumes:
+      - ./clickhouse/node1:/etc/clickhouse-server
+      - ./clickhouse/node1/init:/docker-entrypoint-initdb.d
+    depends_on:
+      - clickhouse-zookeeper
+
+  clickhouse-node2:
+    image: yandex/clickhouse-server:21.3.20.1-alpine
+    container_name: clickhouse-node2
+    hostname: clickhouse-node2
+    volumes:
+      - ./clickhouse/node2/init:/docker-entrypoint-initdb.d
+      - ./clickhouse/node2:/etc/clickhouse-server
+    depends_on:
+      - clickhouse-zookeeper
+
+  clickhouse-node3:
+    image: yandex/clickhouse-server:21.3.20.1-alpine
+    container_name: clickhouse-node3
+    hostname: clickhouse-node3
+    volumes:
+      - ./clickhouse/node3/init:/docker-entrypoint-initdb.d
+      - ./clickhouse/node3:/etc/clickhouse-server
+    depends_on:
+      - clickhouse-zookeeper      
+
+  clickhouse-node4:
+    image: yandex/clickhouse-server:21.3.20.1-alpine
+    container_name: clickhouse-node4
+    hostname: clickhouse-node4
+    volumes:
+      - ./clickhouse/node4/init:/docker-entrypoint-initdb.d
+      - ./clickhouse/node4:/etc/clickhouse-server
+    depends_on:
+      - clickhouse-zookeeper

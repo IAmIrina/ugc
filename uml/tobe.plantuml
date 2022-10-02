@@ -1,0 +1,87 @@
+@startuml
+skinparam componentStyle uml2
+
+title Приложение Movies 'TO BE'
+
+actor Admin
+component "Панель Администрирования" as AdminPanel #Yellow
+
+' База Данных Фильмов
+database "База Данных Фильмов" as PostgreMovies #Lightblue {
+component FilmworkTable
+component GenreTable
+component PersonTable
+component GenreFilmworkTable
+component PersonFilmworkTable
+}
+
+' Сервис Поиска по фильмам
+component "Поисковый сервис" {
+database "Elastic: Полнотекстовый поиск" as ElasticSearch #Lightblue
+database "Redis" as RedisSearchCashing #Red
+component FastApi #Green
+}
+actor User
+interface SearchInterface #Green
+
+
+
+
+interface "API Просмотров Фильмов" as ViewsInterface #Green
+
+' Компоненты сервиса аутентификации
+package  "Сервис Авторизации" as AuthService {
+database "Redis: Стоп-листы для токенов" as RedisTokens #Red
+database "Postgres: Данные Юзеров" as PostgreUsers #Lightblue
+component FlaskAuth #Green
+component Jaeger #Orange
+component "OAuth 2.0" as OAuth #Blue
+}
+
+' Компоненты сервиса UGC
+package "Сервис UGC" as UserGeneratedContent {
+component "OLTP(Kafka)" as Kafka
+note right
+Содержит топик 'views'
+Партицирована по ключу 'user_id+movie_id'
+end note
+component "OLAP: Clickhouse" as CH
+}
+actor Analytic
+
+cloud "Провайдеры" as Providers
+
+interface AuthApi #Yellow
+
+
+' Взаимодействия
+Admin -- AdminPanel
+AdminPanel -- PostgreMovies
+
+ElasticSearch -- PostgreMovies: "ETL System"
+FastApi -- RedisSearchCashing: Кэширование
+ElasticSearch -up- FastApi
+
+SearchInterface - FastApi
+User -- SearchInterface
+
+
+' Взаимодействия внутри AuthService
+AuthService -[thickness=2] AuthApi: Интерфейс
+FastApi - AuthApi
+note right
+RestAPI
+- CRUD Пользователей, Ролей
+- Работа с JWT токенами
+end note
+FlaskAuth -- PostgreUsers
+FlaskAuth -- RedisTokens
+
+OAuth . Providers
+
+' Взаимодействия UGC
+Kafka -- ViewsInterface
+Kafka -left- CH: ETL
+Analytic -down- CH
+
+@enduml
