@@ -7,7 +7,8 @@ import jwt
 from fastapi import HTTPException, Request
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from pydantic import BaseModel
-from src.core.config import api_settings
+
+from src.core.config import settings
 
 logger = logging.getLogger()
 
@@ -47,7 +48,7 @@ class JWTBearer(HTTPBearer):
 def decodeJWT(token: str) -> dict:
     logger.warning(token)
     try:
-        decoded_token = jwt.decode(token, api_settings.jwt_secret, algorithms=[api_settings.jwt_algorithm])
+        decoded_token = jwt.decode(token, settings.jwt_secret, algorithms=[settings.jwt_algorithm])
         return decoded_token if decoded_token['exp'] >= time.time() else None
     except jwt.exceptions.PyJWTError:
         return {}
