@@ -43,44 +43,14 @@ Count of records = 10 000 000
 3) Распростаняется под лицензией Apache License 2.0:  Commercial use и  Private use 
 
 
-## Результаты тестирования:
+## Результаты тестирования (в секундах):
 
-    VERTICA (10000000 records)
-       Read threads: 25
-       Write threads: 1
-       ----------------------------------------------------------------------------
-        Read all movies watched by user           52.44688866676579 
-        Read 10 last watched movies by user       22.783136248372802 
-        Read 10 the most popular movies           38.30867340821886 
-        Read last watched movies                  109.66096787877827
-       ----------------------------------------------------------------------------
-        Write record                              0.2695156973621524
-       ----------------------------------------------------------------------------
-
-    CLICKHOUSE CLUSTER (10000000 records)
-       Read threads: 50
-       Write threads: 1
-       ----------------------------------------------------------------------------
-        Read all movies watched by user           0.23722820949554443 
-        Read 10 last watched movies by user       0.32258679771423354 
-        Read 10 the most popular movies           23.087147801399247 
-        Read last watched movies                  20.13218543495411
-       ----------------------------------------------------------------------------
-        Write record                              0.06829080141690604
-       ----------------------------------------------------------------------------
-  
-  
-    CLICKHOUSE_SINGLE_NODE (10000000 records)
-       Read threads: 50
-       Write threads: 1
-       ----------------------------------------------------------------------------
-        Read all movies watched by user           8.595622915744785 
-        Read 10 last watched movies by user       9.576598540782927 
-        Read 10 the most popular movies           21.673601531505586 
-        Read last watched movies                  17.666613566141038
-       ----------------------------------------------------------------------------
-        Write record                              0.029419162049572727
-       ----------------------------------------------------------------------------
-
-
+|   | VERTICA | CLICKHOUSE CLUSTER | CLICKHOUSE SINGLE NODE|
+|  :--- |  :---: |  :---: |  :---: |
+| **Read/Write threads** | **25/1** | **50/1** | **50/1** |
+| Read all movies watched by user  |  52.44688866676579  | 0.23722820949554443| 8.595622915744785|
+| Read 10 last watched movies by user  | 22.783136248372802  | 0.32258679771423354| 9.576598540782927|
+| Read 10 the most popular movies  | 38.30867340821886   | 23.087147801399247 | 21.673601531505586|
+| Read last watched movies  | 109.66096787877827 | 20.13218543495411 | 17.666613566141038|
+| Write record  |  0.2695156973621524  | 0.06829080141690604| 0.029419162049572727|
 
