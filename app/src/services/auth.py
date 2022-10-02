@@ -11,6 +11,7 @@ from src.core.config import api_settings
 
 logger = logging.getLogger()
 
+
 class User(BaseModel):
     id: UUID
     roles: list[str]
@@ -37,7 +38,7 @@ class JWTBearer(HTTPBearer):
     def verify_jwt(self, jwtoken: str) -> dict:
         try:
             payload = decodeJWT(jwtoken)
-        except:
+        except jwt.exceptions.PyJWTError:
             payload = None
 
         return payload
@@ -48,5 +49,5 @@ def decodeJWT(token: str) -> dict:
     try:
         decoded_token = jwt.decode(token, api_settings.jwt_secret, algorithms=[api_settings.jwt_algorithm])
         return decoded_token if decoded_token['exp'] >= time.time() else None
-    except:
+    except jwt.exceptions.PyJWTError:
         return {}
