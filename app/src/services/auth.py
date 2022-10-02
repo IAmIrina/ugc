@@ -1,14 +1,13 @@
+import logging
 import time
+from http import HTTPStatus
 from uuid import UUID
 
 import jwt
 from fastapi import HTTPException, Request
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from pydantic import BaseModel
-
 from src.core.config import api_settings
-import logging
-
 
 logger = logging.getLogger()
 
@@ -28,11 +27,11 @@ class JWTBearer(HTTPBearer):
 
         if not credentials.scheme == 'Bearer':
             logger.warning(credentials.scheme)
-            raise HTTPException(status_code=403, detail='Invalid authentication scheme.')
+            raise HTTPException(status_code=HTTPStatus.FORBIDDEN, detail='Invalid authentication scheme.')
         payload = self.verify_jwt(credentials.credentials)
         if not payload:
             logger.warning("PAYLOAD NO")
-            raise HTTPException(status_code=403, detail='Invalid token or expired token.')
+            raise HTTPException(status_code=HTTPStatus.FORBIDDEN, detail='Invalid token or expired token.')
         return User(id=payload['sub'], roles=payload['roles'])
 
     def verify_jwt(self, jwtoken: str) -> dict:
