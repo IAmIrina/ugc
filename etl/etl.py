@@ -12,6 +12,9 @@ logger = logging.getLogger()
 async def etl_script():
     consumer = await get_kafka_consumer()
     clickhouse_client = clickhouse_connect()
+
+    loop = asyncio.get_running_loop()
+
     try:
         batch = []
         async for msg in consumer:
@@ -19,8 +22,15 @@ async def etl_script():
             if len(batch) == etl_settings.batch_size:
                 # Трансформируем сообщения из Kafka
                 transformed = await transform_kafka_record(batch)
+
                 # Загружаем данные в Clickhouse
-                load_data_to_clickhouse(transformed, clickhouse_client)
+                await loop.run_in_executor(
+                    None,
+                    load_data_to_clickhouse,
+                    transformed,
+                    clickhouse_client
+                )
+
                 await consumer.commit()
                 batch = []
     finally:
