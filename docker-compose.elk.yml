@@ -1,0 +1,33 @@
+version: "3.8"
+services:
+    logstash:
+      image: logstash:7.10.1
+      depends_on:
+        - elasticsearch
+      environment:
+        XPACK_MONITORING_ENABLED: "false"
+        ES_HOST: "elasticsearch:9200"
+      ports:
+        - "5044:5044/udp"
+      volumes:
+        - ./deploy/logstash.conf:/config/logstash.conf:ro
+      command: logstash -f /config/logstash.conf 
+
+    elasticsearch:
+      #image: docker.elastic.co/elasticsearch/elasticsearch:7.10.2
+      image: docker.io/elastic/elasticsearch:7.17.6
+      environment:
+        # Указываем ES запуститься в одном экземпляре
+        discovery.type: single-node
+      ports:
+        - 9200:9200
+      volumes:
+        - /tmp/esdata:/tmp/elasticsearch/data
+    # Обратите внимание: не стоит использовать для ELK тот же ES, который задействован для полнотекстового поиска в вашем сервисе
+
+    kibana:
+        image: kibana:7.17.6
+        ports:
+          - "5601:5601"
+        depends_on:
+          - elasticsearch 
