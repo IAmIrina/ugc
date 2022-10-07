@@ -13,6 +13,8 @@ class Settings(BaseSettings):
     jwt_algorithm: str = 'HS256'
     kafka_host: str = 'kafka'
     kafka_port: int = 9092
+    sentry_dsn: str
+    sentry_traces_sample_rate: float = 1.0
 
     class Config:
         env_file_encoding = 'utf-8'

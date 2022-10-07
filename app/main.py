@@ -2,10 +2,16 @@ import uvicorn
 from aiokafka import AIOKafkaProducer
 from fastapi import FastAPI
 from fastapi.responses import ORJSONResponse
+import sentry_sdk
 
 from src.api.v1 import events
 from src.core.config import settings
 from src.db import kafka
+
+sentry_sdk.init(
+    dsn=settings.sentry_dsn,
+    traces_sample_rate=settings.sentry_traces_sample_rate,
+)
 
 app = FastAPI(
     title=settings.project_name,
