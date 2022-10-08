@@ -31,3 +31,9 @@ jobs:
       - name: Lint with wemake-python-styleguide
         run: |
           flake8 --exit-zero --format=html --htmldir=reports/wemake-python-styleguide/ 
+
+      - name: Upload reports
+        uses: actions/upload-artifact@v2
+        with:
+          name: reports
+          path: reports/
