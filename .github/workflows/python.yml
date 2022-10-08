@@ -27,7 +27,8 @@ jobs:
       - name: Create directories
         run: |
           mkdir -p reports/wemake-python-styleguide/
-          mkdir -p reports/mypy/
+          mkdir -p reports/mypy/app/
+          mkdir -p reports/mypy/etl/
 
       - name: Lint with wemake-python-styleguide
         run: |
@@ -35,7 +36,8 @@ jobs:
 
       - name: Lint with mypy
         run: |
-          mypy --html-report reports/mypy/
+          mypy --html-report reports/mypy/app/ app
+          mypy --html-report reports/mypy/etl/ etl
 
       - name: Upload reports
         uses: actions/upload-artifact@v2
