@@ -34,8 +34,8 @@ services:
     depends_on:
       - zookeeper
 
-  fastapi:
-    container_name: fastapi-container
+  ugc-api:
+    container_name: ugc-api
     build:
       context: ./app/
     env_file:
@@ -44,6 +44,19 @@ services:
       - 8002:8000
     depends_on:
       - kafka
+
+  nginx:
+    image: nginx:stable
+    container_name: nginx
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/conf.d:/etc/nginx/conf.d:ro
+      - /tmp/logs/nginx/:/var/log/nginx/
+    ports:
+      - 80:80
+    depends_on:
+      - ugc-api
+
 
   etl:
     container_name: kafka-etl

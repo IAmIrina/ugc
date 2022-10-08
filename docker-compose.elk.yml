@@ -10,7 +10,8 @@ services:
       ports:
         - "5044:5044/udp"
       volumes:
-        - ./deploy/logstash.conf:/config/logstash.conf:ro
+        - ./elk/logstash.conf:/config/logstash.conf:ro
+        - /tmp/logs/nginx/:/var/log/nginx/:ro
       command: logstash -f /config/logstash.conf 
 
     elasticsearch:
@@ -31,3 +32,17 @@ services:
           - "5601:5601"
         depends_on:
           - elasticsearch 
+
+    # filebeat:
+    #   image: docker.elastic.co/beats/filebeat:7.3.2
+    #   volumes:
+    #     - /tmp/logs/nginx:/var/log/nginx:ro
+    #     - ./deploy/filebeat.yml:/usr/share/filebeat/filebeat.yml
+    #   depends_on:
+    #     - app
+    #     - nginx
+    #     - logstash
+    #     - elasticsearch
+    #     - kibana
+    #   links:
+    #     - logstash 
