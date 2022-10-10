@@ -28,15 +28,17 @@ async def etl_script():
                     None,
                     load_data_to_clickhouse,
                     transformed,
-                    clickhouse_client
+                    clickhouse_client,
                 )
 
                 await consumer.commit()
                 batch = []
+    except Exception:
+        logger.warning('Consumer Error')
     finally:
         # Не забываем останавливать Consumer
         await consumer.stop()
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     asyncio.run(etl_script())

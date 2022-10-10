@@ -2,7 +2,7 @@ from models import ConsumedMessage
 
 
 async def transform_kafka_record(batch: list) -> list[ConsumedMessage]:
-    """Преобразует список сообщений из Kafka в валидированный список датаклассов"""
+    """Преобразует список сообщений из Kafka в валидированный список датаклассов."""
     validated_models = []
     for message in batch:
         validated_models.append(
@@ -12,7 +12,7 @@ async def transform_kafka_record(batch: list) -> list[ConsumedMessage]:
                 movie_id=message.value['movie_id'],
                 user_id=message.value['user_id'],
                 posted_at=message.value['posted_at'],
-            )
+            ),
         )
 
     return validated_models
