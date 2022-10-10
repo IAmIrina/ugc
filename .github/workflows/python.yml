@@ -36,8 +36,8 @@ jobs:
 
       - name: Lint with wemake-python-styleguide
         run: |
-          flake8 app --exit-zero --format=html --htmldir=reports/wemake-python-styleguide/app/ 
-          flake8 etl --exit-zero --format=html --htmldir=reports/wemake-python-styleguide/etl/
+          flake8 app --format=html --htmldir=reports/wemake-python-styleguide/app/ 
+          flake8 etl --format=html --htmldir=reports/wemake-python-styleguide/etl/
 
       - name: Lint with mypy
         run: |
