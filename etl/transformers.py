@@ -1,7 +1,9 @@
+from typing import List
+
 from models import ConsumedMessage
 
 
-async def transform_kafka_record(batch: list) -> list[ConsumedMessage]:
+async def transform_kafka_record(batch: list) -> List[ConsumedMessage]:
     """Преобразует список сообщений из Kafka в валидированный список датаклассов."""
     validated_models = []
     for message in batch:

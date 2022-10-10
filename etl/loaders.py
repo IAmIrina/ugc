@@ -1,3 +1,5 @@
+from typing import List
+
 from utils import backoff
 from models import ConsumedMessage
 from clickhouse_driver import Client
@@ -11,7 +13,7 @@ def clickhouse_connect():
 
 
 @backoff()
-def load_data_to_clickhouse(batch: list[ConsumedMessage], clickhouse_client: Client) -> None:
+def load_data_to_clickhouse(batch: List[ConsumedMessage], clickhouse_client: Client) -> None:
     """Загружает список сообщений в Clickhouse."""
     # Формируем данные для вставки
     inserting_data = []
