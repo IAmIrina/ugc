@@ -29,13 +29,15 @@ jobs:
 
       - name: Create directories
         run: |
-          mkdir -p reports/wemake-python-styleguide/
+          mkdir -p reports/wemake-python-styleguide/app/
+          mkdir -p reports/wemake-python-styleguide/etl/
           mkdir -p reports/mypy/app/
           mkdir -p reports/mypy/etl/
 
       - name: Lint with wemake-python-styleguide
         run: |
-          flake8 --exit-zero --format=html --htmldir=reports/wemake-python-styleguide/ 
+          flake8 app --exit-zero --format=html --htmldir=reports/wemake-python-styleguide/app/ 
+          flake8 etl --exit-zero --format=html --htmldir=reports/wemake-python-styleguide/etl/
 
       - name: Lint with mypy
         run: |
