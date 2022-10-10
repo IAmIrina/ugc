@@ -1,4 +1,5 @@
 from datetime import datetime
+from typing import Optional
 from uuid import UUID
 
 import orjson
@@ -26,4 +27,4 @@ class UGCUserEvent(UGCEvent):
 
 
 class UGCEventPosted(UGCUserEvent):
-    posted_at: datetime | None = Field(None, description='When the event was posted')
+    posted_at: Optional[datetime] = Field(None, description='When the event was posted')

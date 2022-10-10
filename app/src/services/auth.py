@@ -1,7 +1,7 @@
 import logging
 import time
 from http import HTTPStatus
-from typing import Optional
+from typing import Optional, List
 from uuid import UUID
 
 import jwt
@@ -16,7 +16,7 @@ logger = logging.getLogger()
 
 class User(BaseModel):
     id: UUID
-    roles: list[str]
+    roles: List[str]
 
 
 class JWTBearer(HTTPBearer):
