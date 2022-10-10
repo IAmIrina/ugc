@@ -47,3 +47,17 @@ jobs:
         with:
           name: reports
           path: reports/
+
+      - name: send telegram message on push
+        if: cancelled() == false
+        uses: appleboy/telegram-action@master
+        with:
+          to: ${{ secrets.ChatID }}
+          token: ${{ secrets.BotToken }}
+          message: |
+            ${{ github.actor }} created pull_request
+            
+            Repository: ${{ github.repository }}
+            
+            python version: ${{ matrix.python-version }}
+            jobStatus: ${{ job.status }}
