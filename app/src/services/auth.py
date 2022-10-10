@@ -1,6 +1,7 @@
 import logging
 import time
 from http import HTTPStatus
+from typing import Optional
 from uuid import UUID
 
 import jwt
@@ -23,7 +24,7 @@ class JWTBearer(HTTPBearer):
         super().__init__(auto_error=auto_error)
 
     async def __call__(self, request: Request):
-        credentials: HTTPAuthorizationCredentials | None = await super().__call__(request)
+        credentials: Optional[HTTPAuthorizationCredentials] = await super().__call__(request)
         if not credentials:
             return None
 
@@ -36,7 +37,7 @@ class JWTBearer(HTTPBearer):
             raise HTTPException(status_code=HTTPStatus.FORBIDDEN, detail='Invalid token or expired token.')
         return User(id=payload['sub'], roles=payload['roles'])
 
-    def verify_jwt(self, jwtoken: str) -> dict | None:
+    def verify_jwt(self, jwtoken: str) -> Optional[dict]:
         try:
             payload = decode_jwt(jwtoken)
         except jwt.exceptions.PyJWTError:
@@ -45,7 +46,7 @@ class JWTBearer(HTTPBearer):
         return payload
 
 
-def decode_jwt(token: str) -> dict | None:
+def decode_jwt(token: str) -> Optional[dict]:
     logger.warning(token)
     try:
         decoded_token = jwt.decode(token, settings.jwt_secret, algorithms=[settings.jwt_algorithm])
