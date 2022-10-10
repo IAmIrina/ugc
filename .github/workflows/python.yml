@@ -41,8 +41,8 @@ jobs:
 
       - name: Lint with mypy
         run: |
-          mypy --html-report reports/mypy/app/ app || true
-          mypy --html-report reports/mypy/etl/ etl || true
+          mypy --html-report reports/mypy/app/ app
+          mypy --html-report reports/mypy/etl/ etl
 
       - name: Upload reports
         uses: actions/upload-artifact@v2
