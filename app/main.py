@@ -29,8 +29,9 @@ async def shutdown():
 app.include_router(events.router, prefix='/ugc/v1/events', tags=['events'])
 
 if __name__ == '__main__':
+    port = 8000
     uvicorn.run(
         'main:app',
-        host='0.0.0.0',
-        port=8000,
+        host='127.0.0.1',
+        port=port,
     )

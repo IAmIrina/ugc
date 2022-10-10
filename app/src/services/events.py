@@ -21,9 +21,11 @@ class EventsService:
         key = self._get_key(event)
 
         posted_event = UGCEventPosted(**event.dict(), posted_at=datetime.utcnow())
-        await self.kafka.send_and_wait(topic=topic,
-                                       key=key.encode(),
-                                       value=posted_event.json().encode())
+        await self.kafka.send_and_wait(
+            topic=topic,
+            key=key.encode(),
+            value=posted_event.json().encode(),
+        )
         return posted_event
 
     @staticmethod
@@ -34,8 +36,7 @@ class EventsService:
         topic = event_type
         if topic not in self.kafka.client.cluster.topics():
             module_logger.error(
-                "Event topic doesn't exist in kafka, choosing default topic '%s'",
-                settings.ugc_default_topic
+                f"Event topic doesn't exist in kafka, choosing default topic '{settings.ugc_default_topic}'",
             )
             topic = settings.ugc_default_topic
         return topic

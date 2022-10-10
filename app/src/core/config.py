@@ -25,4 +25,5 @@ settings = Settings()
 logging_config.dictConfig(LOGGING)
 
 # Корень проекта
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+abspath = os.path.abspath(__file__)
+BASE_DIR = os.path.dirname(os.path.dirname(abspath))

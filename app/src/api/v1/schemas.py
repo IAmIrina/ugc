@@ -5,8 +5,8 @@ import orjson
 from pydantic import BaseModel, Field
 
 
-def orjson_dumps(v, *, default):
-    return orjson.dumps(v, default=default).decode()
+def orjson_dumps(decoded_data, *, default):
+    return orjson.dumps(decoded_data, default=default).decode()
 
 
 class BaseUGCModel(BaseModel):
