@@ -13,6 +13,3 @@ class ConsumedMessage(MainConsumerModel):
     movie_sec: int
     movie_id: str
     user_id: UUID
-
-
-

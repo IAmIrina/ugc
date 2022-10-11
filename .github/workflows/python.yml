@@ -1,0 +1,63 @@
+name: code-quality
+
+on:
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: [ 3.7, 3.8, 3.9 ]
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v2
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install  wemake-python-styleguide flake8-html mypy lxml 
+
+      - name: Create directories
+        run: |
+          mkdir -p reports/wemake-python-styleguide/app/
+          mkdir -p reports/wemake-python-styleguide/etl/
+          mkdir -p reports/mypy/app/
+          mkdir -p reports/mypy/etl/
+
+      - name: Lint with wemake-python-styleguide
+        run: |
+          flake8 app --format=html --htmldir=reports/wemake-python-styleguide/app/ 
+          flake8 etl --format=html --htmldir=reports/wemake-python-styleguide/etl/
+
+      - name: Lint with mypy
+        run: |
+          mypy --html-report reports/mypy/app/ app
+          mypy --html-report reports/mypy/etl/ etl
+
+      - name: Upload reports
+        uses: actions/upload-artifact@v2
+        with:
+          name: reports
+          path: reports/
+
+      - name: send telegram message on push
+        if: ${{ job.status }} == true
+        uses: appleboy/telegram-action@master
+        with:
+          to: ${{ secrets.ChatID }}
+          token: ${{ secrets.BotToken }}
+          message: |
+            ${{ github.actor }} created pull_request
+            
+            Repository: ${{ github.repository }}
+            
+            python version: ${{ matrix.python-version }}
+            jobStatus: ${{ job.status }}

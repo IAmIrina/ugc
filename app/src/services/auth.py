@@ -1,6 +1,7 @@
 import logging
 import time
 from http import HTTPStatus
+from typing import Optional, List
 from uuid import UUID
 
 import jwt
@@ -15,37 +16,37 @@ logger = logging.getLogger()
 
 class User(BaseModel):
     id: UUID
-    roles: list[str]
+    roles: List[str]
 
 
 class JWTBearer(HTTPBearer):
     def __init__(self, auto_error: bool = True):
-        super(JWTBearer, self).__init__(auto_error=auto_error)
+        super().__init__(auto_error=auto_error)
 
     async def __call__(self, request: Request):
-        credentials: HTTPAuthorizationCredentials = await super(JWTBearer, self).__call__(request)
+        credentials: Optional[HTTPAuthorizationCredentials] = await super().__call__(request)
         if not credentials:
-            return
+            return None
 
-        if not credentials.scheme == 'Bearer':
+        if credentials.scheme != 'Bearer':
             logger.warning(credentials.scheme)
             raise HTTPException(status_code=HTTPStatus.FORBIDDEN, detail='Invalid authentication scheme.')
         payload = self.verify_jwt(credentials.credentials)
         if not payload:
-            logger.warning("PAYLOAD NO")
+            logger.warning('PAYLOAD NO')
             raise HTTPException(status_code=HTTPStatus.FORBIDDEN, detail='Invalid token or expired token.')
         return User(id=payload['sub'], roles=payload['roles'])
 
-    def verify_jwt(self, jwtoken: str) -> dict:
+    def verify_jwt(self, jwtoken: str) -> Optional[dict]:
         try:
-            payload = decodeJWT(jwtoken)
+            payload = decode_jwt(jwtoken)
         except jwt.exceptions.PyJWTError:
             payload = None
 
         return payload
 
 
-def decodeJWT(token: str) -> dict:
+def decode_jwt(token: str) -> Optional[dict]:
     logger.warning(token)
     try:
         decoded_token = jwt.decode(token, settings.jwt_secret, algorithms=[settings.jwt_algorithm])

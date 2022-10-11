@@ -1,12 +1,13 @@
 from datetime import datetime
+from typing import Optional
 from uuid import UUID
 
 import orjson
 from pydantic import BaseModel, Field
 
 
-def orjson_dumps(v, *, default):
-    return orjson.dumps(v, default=default).decode()
+def orjson_dumps(decoded_data, *, default):
+    return orjson.dumps(decoded_data, default=default).decode()
 
 
 class BaseUGCModel(BaseModel):
@@ -26,4 +27,4 @@ class UGCUserEvent(UGCEvent):
 
 
 class UGCEventPosted(UGCUserEvent):
-    posted_at: datetime | None = Field(None, description='When the event was posted')
+    posted_at: Optional[datetime] = Field(None, description='When the event was posted')
