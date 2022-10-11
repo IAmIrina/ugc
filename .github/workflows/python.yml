@@ -1,8 +1,6 @@
 name: code-quality
 
 on:
-  push:
-    branches: [ linter_check ]
   pull_request:
     branches: [ main ]
 
