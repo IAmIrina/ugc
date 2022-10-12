@@ -26,6 +26,7 @@ app.add_middleware(
     header_name='X-Request-ID',
 )
 
+
 @app.on_event('startup')
 async def startup():
     kafka.kafka = AIOKafkaProducer(bootstrap_servers=f'{settings.kafka_host}:{settings.kafka_port}')
