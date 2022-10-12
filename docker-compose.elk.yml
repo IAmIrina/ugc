@@ -10,21 +10,18 @@ services:
       ports:
         - "5044:5044/udp"
       volumes:
-        - ./elk/logstash.conf:/config/logstash.conf:ro
+        - ./deploy/logstash/logstash.conf:/config/logstash.conf:ro
         - /tmp/logs/nginx/:/var/log/nginx/:ro
       command: logstash -f /config/logstash.conf 
 
     elasticsearch:
-      #image: docker.elastic.co/elasticsearch/elasticsearch:7.10.2
       image: docker.io/elastic/elasticsearch:7.17.6
       environment:
-        # Указываем ES запуститься в одном экземпляре
         discovery.type: single-node
       ports:
         - 9200:9200
       volumes:
         - /tmp/esdata:/tmp/elasticsearch/data
-    # Обратите внимание: не стоит использовать для ELK тот же ES, который задействован для полнотекстового поиска в вашем сервисе
 
     kibana:
         image: kibana:7.17.6
@@ -33,16 +30,17 @@ services:
         depends_on:
           - elasticsearch 
 
-    # filebeat:
-    #   image: docker.elastic.co/beats/filebeat:7.3.2
-    #   volumes:
-    #     - /tmp/logs/nginx:/var/log/nginx:ro
-    #     - ./deploy/filebeat.yml:/usr/share/filebeat/filebeat.yml
-    #   depends_on:
-    #     - app
-    #     - nginx
-    #     - logstash
-    #     - elasticsearch
-    #     - kibana
-    #   links:
-    #     - logstash 
+    filebeat:
+      image: elastic/filebeat:8.4.3
+      volumes:
+        - /tmp/logs/nginx/json:/var/log/nginx:ro
+        - ./deploy/filebeat/filebeat.yml:/usr/share/filebeat/filebeat.yml:ro
+        -  /tmp/logs/ugc/json:/var/log/app:ro
+      environment:
+        - LOGSTASH_HOSTS=["logstash:5045"]
+      depends_on:
+        - logstash
+        - elasticsearch
+        - kibana
+      links:
+        - logstash 

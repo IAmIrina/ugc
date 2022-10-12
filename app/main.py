@@ -1,8 +1,9 @@
+import sentry_sdk
 import uvicorn
 from aiokafka import AIOKafkaProducer
+from asgi_correlation_id import CorrelationIdMiddleware
 from fastapi import FastAPI
 from fastapi.responses import ORJSONResponse
-import sentry_sdk
 
 from src.api.v1 import events
 from src.core.config import settings
@@ -20,6 +21,10 @@ app = FastAPI(
     default_response_class=ORJSONResponse,
 )
 
+app.add_middleware(
+    CorrelationIdMiddleware,
+    header_name='X-Request-ID',
+)
 
 @app.on_event('startup')
 async def startup():

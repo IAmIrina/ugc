@@ -1,57 +1,56 @@
-LOG_FORMAT = '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
-LOG_DEFAULT_HANDLERS = ['console', ]
+import os
+import logging
+from logging.config import dictConfig
+from logging.handlers import TimedRotatingFileHandler
+
+import ecs_logging
+from asgi_correlation_id.context import correlation_id
+from asgi_correlation_id.log_filters import CorrelationIdFilter, _trim_string
+
+LOG_FILENAME = os.getenv('LOG_FILENAME', '/var/log/app/logs.json')
+LOG_LEVEL =  os.getenv('LOG_LEVEL', 'INFO')
+
+class RequestIdFilter(CorrelationIdFilter):
+    def filter(self, record: 'LogRecord') -> bool:
+        """
+        Attach a request ID to the log record.
+        """
+        cid = correlation_id.get()
+        record.request_id = _trim_string(cid, self.uuid_length)
+        return True
 
 LOGGING = {
     'version': 1,
-    'disable_existing_loggers': False,
+    'filters': {
+       'request_id': {
+            '()': RequestIdFilter,
+            'uuid_length': 32,
+       },
+    },
     'formatters': {
-        'verbose': {
-            'format': LOG_FORMAT
-        },
-        'default': {
-            '()': 'uvicorn.logging.DefaultFormatter',
-            'fmt': '%(levelprefix)s %(message)s',
-            'use_colors': None,
-        },
-        'access': {
-            '()': 'uvicorn.logging.AccessFormatter',
-            'fmt': "%(levelprefix)s %(client_addr)s - '%(request_line)s' %(status_code)s",
+        'default': {'format': '[%(request_id)s] [%(asctime)s] %(levelname)s in %(module)s: %(message)s'},
+        'ecs_logging': {
+            '()': ecs_logging.StdlibFormatter,
         },
     },
     'handlers': {
-        'console': {
-            'level': 'DEBUG',
-            'class': 'logging.StreamHandler',
-            'formatter': 'verbose',
-        },
-        'default': {
+        'default': { 
             'formatter': 'default',
             'class': 'logging.StreamHandler',
-            'stream': 'ext://sys.stdout',
+            'filters': ['request_id'],
         },
-        'access': {
-            'formatter': 'access',
-            'class': 'logging.StreamHandler',
-            'stream': 'ext://sys.stdout',
-        },
-    },
-    'loggers': {
-        '': {
-            'handlers': LOG_DEFAULT_HANDLERS,
-            'level': 'INFO',
-        },
-        'uvicorn.error': {
-            'level': 'INFO',
-        },
-        'uvicorn.access': {
-            'handlers': ['access'],
-            'level': 'INFO',
-            'propagate': False,
-        },
+        'web': {
+            'class': 'logging.handlers.TimedRotatingFileHandler',
+            'filename': LOG_FILENAME,
+            'when': 'h',
+            'interval': 1, 
+            'backupCount': 5,
+            'formatter': 'ecs_logging',
+            'filters': ['request_id']
+        }
     },
     'root': {
-        'level': 'INFO',
-        'formatter': 'verbose',
-        'handlers': LOG_DEFAULT_HANDLERS,
-    },
+        'level': LOG_LEVEL,
+        'handlers': ['web', 'default']
+    }
 }
