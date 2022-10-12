@@ -1,0 +1,46 @@
+version: "3.8"
+services:
+    logstash:
+      image: logstash:7.10.1
+      depends_on:
+        - elasticsearch
+      environment:
+        XPACK_MONITORING_ENABLED: "false"
+        ES_HOST: "elasticsearch:9200"
+      ports:
+        - "5044:5044/udp"
+      volumes:
+        - ./deploy/logstash/logstash.conf:/config/logstash.conf:ro
+        - /tmp/logs/nginx/:/var/log/nginx/:ro
+      command: logstash -f /config/logstash.conf 
+
+    elasticsearch:
+      image: docker.io/elastic/elasticsearch:7.17.6
+      environment:
+        discovery.type: single-node
+      ports:
+        - 9200:9200
+      volumes:
+        - /tmp/esdata:/tmp/elasticsearch/data
+
+    kibana:
+        image: kibana:7.17.6
+        ports:
+          - "5601:5601"
+        depends_on:
+          - elasticsearch 
+
+    filebeat:
+      image: elastic/filebeat:8.4.3
+      volumes:
+        - /tmp/logs/nginx/json:/var/log/nginx:ro
+        - ./deploy/filebeat/filebeat.yml:/usr/share/filebeat/filebeat.yml:ro
+        -  /tmp/logs/ugc/json:/var/log/app:ro
+      environment:
+        - LOGSTASH_HOSTS=["logstash:5045"]
+      depends_on:
+        - logstash
+        - elasticsearch
+        - kibana
+      links:
+        - logstash 

@@ -1,0 +1,21 @@
+filebeat.inputs:
+  - type: log
+    id: nginx
+    enabled: true
+    paths:
+      - /var/log/nginx/*
+    processors:
+      - add_tags:
+          tags: ["nginx"]
+  - type: log
+    id: ugc
+    enabled: true
+    paths:
+      - /var/log/app/*
+    processors:
+      - add_tags:
+          tags: ["ugc"]
+
+output.logstash:
+  enabled: true
+  hosts:  ${LOGSTASH_HOSTS}
