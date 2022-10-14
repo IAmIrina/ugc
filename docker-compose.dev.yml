@@ -116,3 +116,12 @@ services:
       - ./clickhouse/node4:/etc/clickhouse-server
     depends_on:
       - clickhouse-zookeeper
+
+  mongodb:
+    image: mongo:latest # use the latest image.
+    container_name: mongodb
+    restart: unless-stopped
+    ports:
+      - 27017:27017
+    volumes: # optional to preserve database after container is deleted.
+      - ./database-data:/data/db
