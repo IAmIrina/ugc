@@ -4,10 +4,11 @@ from aiokafka import AIOKafkaProducer
 from asgi_correlation_id import CorrelationIdMiddleware
 from fastapi import FastAPI
 from fastapi.responses import ORJSONResponse
+from motor.motor_asyncio import AsyncIOMotorClient
 
 from src.api.v1 import events
 from src.core.config import settings
-from src.db import kafka
+from src.db import kafka, mongo
 
 sentry_sdk.init(
     dsn=settings.sentry_dsn,
@@ -31,6 +32,9 @@ app.add_middleware(
 async def startup():
     kafka.kafka = AIOKafkaProducer(bootstrap_servers=f'{settings.kafka_host}:{settings.kafka_port}')
     await kafka.kafka.start()
+
+    MONGODB_URL = "mongodb://localhost:27017/myFirstDatabase"
+    mongo.mongo = AsyncIOMotorClient(MONGODB_URL)
 
 
 @app.on_event('shutdown')
