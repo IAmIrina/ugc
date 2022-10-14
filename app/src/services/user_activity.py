@@ -4,15 +4,13 @@ from fastapi import HTTPException
 from fastapi.encoders import jsonable_encoder
 from motor.motor_asyncio import AsyncIOMotorDatabase
 
-from src.api.v1.schemas import UserGrade, Bookmark, UserReview
-
 
 class FilmService:
     def __init__(self, mongo_db: AsyncIOMotorDatabase, collection_name: str):
         self.mongo_db = mongo_db
         self.collection_name = collection_name
 
-    async def add_data(self, data: UserGrade | Bookmark | UserReview) -> UserGrade | Bookmark | UserReview:
+    async def add_data(self, data):
         user_data = jsonable_encoder(data)
         if await self._find_data(user_data['movie_id'], user_data['user_id']):
             raise HTTPException(status_code=HTTPStatus.CONFLICT, detail='Already exists')
