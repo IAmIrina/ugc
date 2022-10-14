@@ -18,10 +18,9 @@ logger = logging.getLogger()
     response_description='Added review to the film',
 )
 async def add_review(
-        review: Review,
-        user: User = Depends(JWTBearer()),
+    review: Review,
+    user: User = Depends(JWTBearer()),
 ) -> UserReview:
     service = FilmService(get_mongo_db(), 'reviews')
     user_review = UserReview(user_id=user.id, **review.dict())
-    created_review = await service.add_data(user_review)
-    return created_review
+    return await service.add_data(user_review)

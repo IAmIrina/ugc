@@ -17,9 +17,9 @@ logger = logging.getLogger()
     response_description='Posted UGC event with timestamp',
 )
 async def post_event(
-        event: UGCEvent,
-        service: EventsService = Depends(get_events_service),
-        user: User = Depends(JWTBearer()),
+    event: UGCEvent,
+    service: EventsService = Depends(get_events_service),
+    user: User = Depends(JWTBearer()),
 ) -> UGCEventPosted:
     logger.warning('event received')
     user_event = UGCUserEvent(user_id=user.id, **event.dict())

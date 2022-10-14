@@ -17,11 +17,9 @@ class FilmService:
         if await self._find_data(user_data['movie_id'], user_data['user_id']):
             raise HTTPException(status_code=HTTPStatus.CONFLICT, detail='Already exists')
         new_data = await self.mongo_db[self.collection_name].insert_one(user_data)
-        created_data = await self.mongo_db[self.collection_name].find_one({"_id": new_data.inserted_id})
-        return created_data
+        return await self.mongo_db[self.collection_name].find_one({'_id': new_data.inserted_id})
 
     async def _find_data(self, movie_id, user_id):
-        data = await self.mongo_db[self.collection_name].find_one(
-            {"movie_id": movie_id, "user_id": user_id}
+        return await self.mongo_db[self.collection_name].find_one(
+            {'movie_id': movie_id, 'user_id': user_id},
         )
-        return data

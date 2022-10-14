@@ -18,10 +18,9 @@ logger = logging.getLogger()
     response_description='Added bookmark to the film',
 )
 async def add_bookmark(
-        movie: Movie,
-        user: User = Depends(JWTBearer()),
+    movie: Movie,
+    user: User = Depends(JWTBearer()),
 ) -> Bookmark:
     service = FilmService(get_mongo_db(), 'bookmarks')
     user_bookmark = Bookmark(user_id=user.id, **movie.dict())
-    created_bookmark = await service.add_data(user_bookmark)
-    return created_bookmark
+    return await service.add_data(user_bookmark)

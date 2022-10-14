@@ -33,8 +33,7 @@ async def startup():
     kafka.kafka = AIOKafkaProducer(bootstrap_servers=f'{settings.kafka_host}:{settings.kafka_port}')
     await kafka.kafka.start()
 
-    MONGODB_URL = "mongodb://localhost:27017/myFirstDatabase"
-    mongo.mongo = AsyncIOMotorClient(MONGODB_URL)
+    mongo.mongo = AsyncIOMotorClient(settings.mongodb_url)
 
 
 @app.on_event('shutdown')

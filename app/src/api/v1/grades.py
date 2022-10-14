@@ -18,10 +18,9 @@ logger = logging.getLogger()
     response_description='Added grade to the film',
 )
 async def add_grade(
-        grade: Grade,
-        user: User = Depends(JWTBearer()),
+    grade: Grade,
+    user: User = Depends(JWTBearer()),
 ) -> UserGrade:
     service = FilmService(get_mongo_db(), 'grades')
     user_grade = UserGrade(user_id=user.id, **grade.dict())
-    created_grade = await service.add_data(user_grade)
-    return created_grade
+    return await service.add_data(user_grade)
