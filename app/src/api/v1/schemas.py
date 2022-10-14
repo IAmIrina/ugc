@@ -65,9 +65,6 @@ class UserGrade(Grade):
     user_id: UUID = Field(..., description='User id')
 
     class Config:
-        # allow_population_by_field_name = True
-        # arbitrary_types_allowed = True
-        # json_encoders = {ObjectId: str}
         schema_extra = {
             "example": {
                 "_id": "63493e4a57ce0a4356b3e37a",
@@ -83,9 +80,6 @@ class Bookmark(Movie):
     user_id: UUID = Field(..., description='User id')
 
     class Config:
-        # allow_population_by_field_name = True
-        # arbitrary_types_allowed = True
-        # json_encoders = {ObjectId: str}
         schema_extra = {
             "example": {
                 "_id": "63493e4a57ce0a4356b3e37a",
@@ -105,13 +99,12 @@ class UserReview(Review):
     user_id: UUID = Field(..., description='User id')
 
     class Config:
-        # allow_population_by_field_name = True
-        # arbitrary_types_allowed = True
-        # json_encoders = {ObjectId: str}
         schema_extra = {
             "example": {
-                "_id": "63493e4a57ce0a4356b3e37a",
-                "movie_id": "92cb640a-79da-4aa5-b2aa-3ce2ad2dc920",
+                "movie_id": "6f7687e4-7b7b-44e0-a1e5-9a7ac1cba0cf",
+                "text": "string",
+                "created_at": "2022-10-14T13:13:39.818000+00:00",
+                "_id": "634960af663721d4dd67a0a9",
                 "user_id": "16168708-f1c0-4767-9b6d-8601d396fd91"
             }
         }
