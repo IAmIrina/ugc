@@ -4,10 +4,11 @@ from aiokafka import AIOKafkaProducer
 from asgi_correlation_id import CorrelationIdMiddleware
 from fastapi import FastAPI
 from fastapi.responses import ORJSONResponse
+from motor.motor_asyncio import AsyncIOMotorClient
 
-from src.api.v1 import events
+from src.api.v1 import events, grades, bookmarks, reviews
 from src.core.config import settings
-from src.db import kafka
+from src.db import kafka, mongo
 
 sentry_sdk.init(
     dsn=settings.sentry_dsn,
@@ -32,6 +33,8 @@ async def startup():
     kafka.kafka = AIOKafkaProducer(bootstrap_servers=f'{settings.kafka_host}:{settings.kafka_port}')
     await kafka.kafka.start()
 
+    mongo.mongo = AsyncIOMotorClient(settings.mongodb_url)
+
 
 @app.on_event('shutdown')
 async def shutdown():
@@ -39,6 +42,9 @@ async def shutdown():
 
 
 app.include_router(events.router, prefix='/ugc/v1/events', tags=['events'])
+app.include_router(grades.router, prefix='/ugc/v1/grades', tags=['grades'])
+app.include_router(bookmarks.router, prefix='/ugc/v1/bookmarks', tags=['bookmarks'])
+app.include_router(reviews.router, prefix='/ugc/v1/reviews', tags=['reviews'])
 
 if __name__ == '__main__':
     port = 8000

@@ -15,6 +15,7 @@ class Settings(BaseSettings):
     kafka_port: int = 9092
     sentry_dsn: str
     sentry_traces_sample_rate: float = 1.0
+    mongodb_url: str = 'mongodb://localhost:27017/myFirstDatabase'
 
     class Config:
         env_file_encoding = 'utf-8'
