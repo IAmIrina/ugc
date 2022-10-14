@@ -5,7 +5,7 @@ from fastapi import Depends, APIRouter
 from src.api.v1.schemas import Bookmark, Movie
 from src.db.mongo import get_mongo_db
 from src.services.auth import User, JWTBearer
-from src.services.events import FilmService
+from src.services.user_activity import FilmService
 
 router = APIRouter()
 
@@ -21,7 +21,7 @@ async def add_bookmark(
         movie: Movie,
         user: User = Depends(JWTBearer()),
 ) -> Bookmark:
-    service = FilmService(get_mongo_db())
+    service = FilmService(get_mongo_db(), 'bookmarks')
     user_bookmark = Bookmark(user_id=user.id, **movie.dict())
-    created_bookmark = await service.add_bookmark(user_bookmark)
+    created_bookmark = await service.add_data(user_bookmark)
     return created_bookmark

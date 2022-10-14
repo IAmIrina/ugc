@@ -5,7 +5,7 @@ from fastapi import Depends, APIRouter
 from src.api.v1.schemas import UserGrade, Grade
 from src.db.mongo import get_mongo_db
 from src.services.auth import User, JWTBearer
-from src.services.events import FilmService
+from src.services.user_activity import FilmService
 
 router = APIRouter()
 
@@ -23,6 +23,5 @@ async def add_grade(
 ) -> UserGrade:
     service = FilmService(get_mongo_db(), 'grades')
     user_grade = UserGrade(user_id=user.id, **grade.dict())
-    # created_grade = await service.add_grade(user_grade)
     created_grade = await service.add_data(user_grade)
     return created_grade
