@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import Optional
+from typing import Optional, List
 from uuid import UUID
 
 import orjson
@@ -108,3 +108,25 @@ class UserReview(Review):
                 'user_id': '16168708-f1c0-4767-9b6d-8601d396fd91',
             },
         }
+
+
+class Pagination(BaseModel):
+    per_page: int
+    page: int
+
+
+class BaseSchema(BaseModel):
+    meta: Pagination
+
+    class Config:
+        allow_population_by_field_name = True
+        arbitrary_types_allowed = True
+        json_encoders = {ObjectId: str}
+
+
+class BookmarkSchema(BaseSchema):
+    data: List[Movie]
+
+
+class ReviewSchema(BaseSchema):
+    data: List[Review]
