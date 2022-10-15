@@ -17,6 +17,15 @@ class FilmService:
         new_data = await self.mongo_db[self.collection_name].insert_one(user_data)
         return await self.mongo_db[self.collection_name].find_one({'_id': new_data.inserted_id})
 
+    async def get_data_by_user_id(self, user_id, page_number: int = 1, per_page: int = 50):
+        return await (self.mongo_db[self.collection_name]  # noqa: WPS221
+                      .find({'user_id': user_id})  # noqa: WPS318
+                      .sort('_id')
+                      .skip((page_number - 1) * per_page)
+                      .limit(per_page)
+                      .to_list(per_page)  # noqa: C812
+                      )
+
     async def _find_data(self, movie_id, user_id):
         return await self.mongo_db[self.collection_name].find_one(
             {'movie_id': movie_id, 'user_id': user_id},

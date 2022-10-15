@@ -108,3 +108,18 @@ class UserReview(Review):
                 'user_id': '16168708-f1c0-4767-9b6d-8601d396fd91',
             },
         }
+
+
+class Pagination(BaseModel):
+    per_page: int
+    page: int
+
+
+class BookmarkSchema(BaseModel):
+    meta: Pagination
+    data: list[Movie]
+
+    class Config:
+        allow_population_by_field_name = True
+        arbitrary_types_allowed = True
+        json_encoders = {ObjectId: str}
