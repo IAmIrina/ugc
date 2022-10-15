@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import Optional
+from typing import Optional, List
 from uuid import UUID
 
 import orjson
@@ -115,9 +115,8 @@ class Pagination(BaseModel):
     page: int
 
 
-class BookmarkSchema(BaseModel):
+class BaseSchema(BaseModel):
     meta: Pagination
-    data: list[Movie]
 
     class Config:
         allow_population_by_field_name = True
@@ -125,11 +124,9 @@ class BookmarkSchema(BaseModel):
         json_encoders = {ObjectId: str}
 
 
-class ReviewSchema(BaseModel):
-    meta: Pagination
-    data: list[Review]
+class BookmarkSchema(BaseSchema):
+    data: List[Movie]
 
-    class Config:
-        allow_population_by_field_name = True
-        arbitrary_types_allowed = True
-        json_encoders = {ObjectId: str}
+
+class ReviewSchema(BaseSchema):
+    data: List[Review]
