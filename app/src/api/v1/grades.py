@@ -34,7 +34,7 @@ async def add_grade(
     '/{grade_id}',
     status_code=HTTPStatus.NO_CONTENT,
 )
-async def delete_review(grade_id: str, user: User = Depends(JWTBearer())):
+async def delete_grade(grade_id: str, user: User = Depends(JWTBearer())):
     service = get_service()
     await service.delete(grade_id)
     return JSONResponse(status_code=HTTPStatus.NO_CONTENT, content='OK')
@@ -45,7 +45,7 @@ async def delete_review(grade_id: str, user: User = Depends(JWTBearer())):
     response_model=GradeSchema, description='Users grades',
     response_description='Users grades',
 )
-async def get_reviews(
+async def get_grades(
     user: User = Depends(JWTBearer()),
     paginator: Paginator = Depends(),
 ) -> GradeSchema:

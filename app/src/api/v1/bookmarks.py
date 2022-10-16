@@ -58,7 +58,7 @@ async def get_bookmarks(
     '/{bookmark_id}',
     status_code=HTTPStatus.NO_CONTENT,
 )
-async def delete_review(bookmark_id: str, user: User = Depends(JWTBearer())):
+async def delete_bookmark(bookmark_id: str, user: User = Depends(JWTBearer())):
     service = get_service()
     await service.delete(bookmark_id)
     return JSONResponse(status_code=HTTPStatus.NO_CONTENT, content='OK')
