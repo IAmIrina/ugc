@@ -61,8 +61,7 @@ class PyObjectId(ObjectId):
 
 
 class UserGrade(Grade):
-    # TODO удалить перед коммитом
-    id: PyObjectId | None = Field(default_factory=PyObjectId, alias='_id')
+    id: PyObjectId = Field(default_factory=PyObjectId, alias='_id')
     user_id: UUID = Field(..., description='User id')
 
     class Config:
