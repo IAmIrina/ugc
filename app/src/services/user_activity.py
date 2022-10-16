@@ -39,7 +39,7 @@ class FilmService:
         if len(data) >= 1:  # noqa: WPS507
             update_result = await self.mongo_db[self.collection_name].update_one(
                 {'_id': _id}, {'$set': data},
-            )  # noqa: WPS221
+            )
 
             if update_result.modified_count == 1:
                 return await self.mongo_db[self.collection_name].find_one({'_id': _id})
