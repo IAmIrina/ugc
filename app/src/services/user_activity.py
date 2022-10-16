@@ -17,6 +17,12 @@ class FilmService:
         new_data = await self.mongo_db[self.collection_name].insert_one(user_data)
         return await self.mongo_db[self.collection_name].find_one({'_id': new_data.inserted_id})
 
+    async def delete_data(self, _id):
+        delete_result = await self.mongo_db[self.collection_name].delete_one({'_id': _id})
+
+        if delete_result.deleted_count != 1:
+            raise HTTPException(status_code=HTTPStatus.NOT_FOUND, detail='Not found')
+
     async def get_data_by_user_id(self, user_id, page_number: int = 1, per_page: int = 50):
         return await (self.mongo_db[self.collection_name]  # noqa: WPS221
                       .find({'user_id': user_id})  # noqa: WPS318
