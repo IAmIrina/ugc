@@ -1,6 +1,8 @@
 import logging
+from http import HTTPStatus
 
 from fastapi import Depends, APIRouter
+from starlette.responses import JSONResponse
 
 from src.api.v1.paginator import Paginator
 from src.api.v1.schemas import Bookmark, Movie, BookmarkSchema, Pagination
@@ -22,7 +24,7 @@ async def add_bookmark(
     movie: Movie,
     user: User = Depends(JWTBearer()),
 ) -> Bookmark:
-    service = FilmService(get_mongo_db(), 'bookmarks')
+    service = get_service()
     user_bookmark = Bookmark(user_id=user.id, **movie.dict())
     return await service.add(user_bookmark)
 
@@ -36,7 +38,7 @@ async def get_bookmarks(
     user: User = Depends(JWTBearer()),
     paginator: Paginator = Depends(),
 ) -> BookmarkSchema:
-    service = FilmService(get_mongo_db(), 'bookmarks')
+    service = get_service()
     bookmarks = await service.get_by_user_id(
         str(user.id),
         page_number=paginator.page,
@@ -49,3 +51,17 @@ async def get_bookmarks(
         ),
         data=bookmarks,
     )
+
+
+@router.delete(
+    '/{bookmark_id}',
+    status_code=HTTPStatus.NO_CONTENT,
+)
+async def delete_review(bookmark_id: str, user: User = Depends(JWTBearer())):
+    service = get_service()
+    await service.delete(bookmark_id)
+    return JSONResponse(status_code=HTTPStatus.NO_CONTENT, content='OK')
+
+
+def get_service():
+    return FilmService(get_mongo_db(), 'bookmarks')
