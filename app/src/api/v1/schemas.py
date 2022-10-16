@@ -130,3 +130,7 @@ class BookmarkSchema(BaseSchema):
 
 class ReviewSchema(BaseSchema):
     data: List[UserReview]
+
+
+class GradeSchema(BaseSchema):
+    data: List[UserGrade]
