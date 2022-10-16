@@ -1,4 +1,5 @@
 import logging
+from functools import lru_cache
 from http import HTTPStatus
 
 from fastapi import Depends, APIRouter
@@ -63,5 +64,6 @@ async def delete_review(bookmark_id: str, user: User = Depends(JWTBearer())):
     return JSONResponse(status_code=HTTPStatus.NO_CONTENT, content='OK')
 
 
+@lru_cache()
 def get_service():
     return FilmService(get_mongo_db(), 'bookmarks')
