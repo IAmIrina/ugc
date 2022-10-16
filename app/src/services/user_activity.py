@@ -14,7 +14,7 @@ class FilmService:
         user_data = jsonable_encoder(data)
         if await self._find(user_data['movie_id'], user_data['user_id']):
             raise HTTPException(status_code=HTTPStatus.CONFLICT, detail='Already exists')
-        new_data = await self.mongo_db[self.collection_name].insert_one(user_data)
+        new_data = await self.mongo_db[self.collection_name].insert_one(user_data)  # noqa: WPS204
         return await self.mongo_db[self.collection_name].find_one({'_id': new_data.inserted_id})
 
     async def delete(self, _id):
@@ -31,6 +31,23 @@ class FilmService:
                       .limit(per_page)
                       .to_list(per_page)  # noqa: C812
                       )
+
+    async def update(self, _id, data):
+        user_data = jsonable_encoder(data)
+        data = {key: value for key, value in user_data.items() if value is not None}  # noqa: WPS221
+
+        if len(data) >= 1:  # noqa: WPS507
+            update_result = await self.mongo_db[self.collection_name].update_one(
+                {'_id': _id}, {'$set': data},
+            )  # noqa: WPS221
+
+            if update_result.modified_count == 1:
+                return await self.mongo_db[self.collection_name].find_one({'_id': _id})
+
+        if existing_data := await self.mongo_db[self.collection_name].find_one({'_id': _id}):  # noqa: WPS332
+            return existing_data
+
+        raise HTTPException(status_code=HTTPStatus.NOT_FOUND, detail='Not found')
 
     async def _find(self, movie_id, user_id):
         return await self.mongo_db[self.collection_name].find_one(

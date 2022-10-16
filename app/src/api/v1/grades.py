@@ -1,4 +1,5 @@
 import logging
+from functools import lru_cache
 from http import HTTPStatus
 
 from fastapi import Depends, APIRouter
@@ -24,7 +25,7 @@ async def add_grade(
     grade: Grade,
     user: User = Depends(JWTBearer()),
 ) -> UserGrade:
-    service = FilmService(get_mongo_db(), 'grades')
+    service = get_service()
     user_grade = UserGrade(user_id=user.id, **grade.dict())
     return await service.add(user_grade)
 
@@ -34,7 +35,7 @@ async def add_grade(
     status_code=HTTPStatus.NO_CONTENT,
 )
 async def delete_review(grade_id: str, user: User = Depends(JWTBearer())):
-    service = FilmService(get_mongo_db(), 'grades')
+    service = get_service()
     await service.delete(grade_id)
     return JSONResponse(status_code=HTTPStatus.NO_CONTENT, content='OK')
 
@@ -45,10 +46,10 @@ async def delete_review(grade_id: str, user: User = Depends(JWTBearer())):
     response_description='Users grades',
 )
 async def get_reviews(
-        user: User = Depends(JWTBearer()),
-        paginator: Paginator = Depends(),
+    user: User = Depends(JWTBearer()),
+    paginator: Paginator = Depends(),
 ) -> GradeSchema:
-    service = FilmService(get_mongo_db(), 'grades')
+    service = get_service()
     grades = await service.get_by_user_id(
         str(user.id),
         page_number=paginator.page,
@@ -61,3 +62,23 @@ async def get_reviews(
         ),
         data=grades,
     )
+
+
+@router.put(
+    '/{grade_id}',
+    response_model=UserGrade, description='Add grade to the film',
+    response_description='Added grade to the film',
+)
+async def update_grade(
+    grade_id: str,
+    grade: Grade,
+    user: User = Depends(JWTBearer()),
+) -> UserGrade:
+    service = get_service()
+    # user_grade = UserGrade(user_id=user.id, **grade.dict())
+    return await service.update(grade_id, grade)
+
+
+@lru_cache()
+def get_service():
+    return FilmService(get_mongo_db(), 'grades')
