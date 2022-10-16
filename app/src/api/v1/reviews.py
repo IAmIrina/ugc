@@ -1,6 +1,9 @@
 import logging
+from functools import lru_cache
+from http import HTTPStatus
 
 from fastapi import Depends, APIRouter
+from starlette.responses import JSONResponse
 
 from src.api.v1.paginator import Paginator
 from src.api.v1.schemas import UserReview, Review, ReviewSchema, Pagination
@@ -22,9 +25,19 @@ async def add_review(
     review: Review,
     user: User = Depends(JWTBearer()),
 ) -> UserReview:
-    service = FilmService(get_mongo_db(), 'reviews')
+    service = get_service()
     user_review = UserReview(user_id=user.id, **review.dict())
-    return await service.add_data(user_review)
+    return await service.add(user_review)
+
+
+@router.delete(
+    '/{review_id}',
+    status_code=HTTPStatus.NO_CONTENT,
+)
+async def delete_review(review_id: str, user: User = Depends(JWTBearer())):
+    service = get_service()
+    await service.delete(review_id)
+    return JSONResponse(status_code=HTTPStatus.NO_CONTENT, content='OK')
 
 
 @router.get(
@@ -36,8 +49,8 @@ async def get_reviews(
     user: User = Depends(JWTBearer()),
     paginator: Paginator = Depends(),
 ) -> ReviewSchema:
-    service = FilmService(get_mongo_db(), 'reviews')
-    reviews = await service.get_data_by_user_id(
+    service = get_service()
+    reviews = await service.get_by_user_id(
         str(user.id),
         page_number=paginator.page,
         per_page=paginator.per_page,
@@ -49,3 +62,22 @@ async def get_reviews(
         ),
         data=reviews,
     )
+
+
+@router.put(
+    '/{review_id}',
+    response_model=UserReview, description='Update review to the film',
+    response_description='Update review to the film',
+)
+async def update_review(
+    review_id: str,
+    review: Review,
+    user: User = Depends(JWTBearer()),
+) -> UserReview:
+    service = get_service()
+    return await service.update(review_id, review)
+
+
+@lru_cache()
+def get_service():
+    return FilmService(get_mongo_db(), 'reviews')

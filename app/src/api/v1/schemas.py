@@ -125,8 +125,12 @@ class BaseSchema(BaseModel):
 
 
 class BookmarkSchema(BaseSchema):
-    data: List[Movie]
+    data: List[Bookmark]
 
 
 class ReviewSchema(BaseSchema):
-    data: List[Review]
+    data: List[UserReview]
+
+
+class GradeSchema(BaseSchema):
+    data: List[UserGrade]
