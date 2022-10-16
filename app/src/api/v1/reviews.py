@@ -1,6 +1,8 @@
 import logging
+from http import HTTPStatus
 
 from fastapi import Depends, APIRouter
+from starlette.responses import JSONResponse
 
 from src.api.v1.paginator import Paginator
 from src.api.v1.schemas import UserReview, Review, ReviewSchema, Pagination
@@ -24,7 +26,17 @@ async def add_review(
 ) -> UserReview:
     service = FilmService(get_mongo_db(), 'reviews')
     user_review = UserReview(user_id=user.id, **review.dict())
-    return await service.add_data(user_review)
+    return await service.add(user_review)
+
+
+@router.delete(
+    '/{review_id}',
+    status_code=HTTPStatus.NO_CONTENT,
+)
+async def delete_review(review_id: str, user: User = Depends(JWTBearer())):
+    service = FilmService(get_mongo_db(), 'reviews')
+    await service.delete(review_id)
+    return JSONResponse(status_code=HTTPStatus.NO_CONTENT, content='OK')
 
 
 @router.get(
@@ -37,7 +49,7 @@ async def get_reviews(
     paginator: Paginator = Depends(),
 ) -> ReviewSchema:
     service = FilmService(get_mongo_db(), 'reviews')
-    reviews = await service.get_data_by_user_id(
+    reviews = await service.get_by_user_id(
         str(user.id),
         page_number=paginator.page,
         per_page=paginator.per_page,
