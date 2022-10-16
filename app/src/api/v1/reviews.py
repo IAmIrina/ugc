@@ -64,6 +64,20 @@ async def get_reviews(
     )
 
 
+@router.put(
+    '/{review_id}',
+    response_model=UserReview, description='Update review to the film',
+    response_description='Update review to the film',
+)
+async def update_review(
+    review_id: str,
+    review: Review,
+    user: User = Depends(JWTBearer()),
+) -> UserReview:
+    service = get_service()
+    return await service.update(review_id, review)
+
+
 @lru_cache()
 def get_service():
     return FilmService(get_mongo_db(), 'reviews')
