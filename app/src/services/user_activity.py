@@ -42,7 +42,8 @@ class FilmService:
             if update_result.modified_count == 1:
                 return await self.mongo_db[self.collection_name].find_one({'_id': _id})
 
-        if existing_data := await self.mongo_db[self.collection_name].find_one({'_id': _id}):  # noqa: WPS332
+        existing_data = await self.mongo_db[self.collection_name].find_one({'_id': _id})
+        if existing_data:
             return existing_data
 
         raise HTTPException(status_code=HTTPStatus.NOT_FOUND, detail='Not found')
