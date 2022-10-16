@@ -1,4 +1,5 @@
 import logging
+from functools import lru_cache
 from http import HTTPStatus
 
 from fastapi import Depends, APIRouter
@@ -24,7 +25,7 @@ async def add_review(
     review: Review,
     user: User = Depends(JWTBearer()),
 ) -> UserReview:
-    service = FilmService(get_mongo_db(), 'reviews')
+    service = get_service()
     user_review = UserReview(user_id=user.id, **review.dict())
     return await service.add(user_review)
 
@@ -34,7 +35,7 @@ async def add_review(
     status_code=HTTPStatus.NO_CONTENT,
 )
 async def delete_review(review_id: str, user: User = Depends(JWTBearer())):
-    service = FilmService(get_mongo_db(), 'reviews')
+    service = get_service()
     await service.delete(review_id)
     return JSONResponse(status_code=HTTPStatus.NO_CONTENT, content='OK')
 
@@ -48,7 +49,7 @@ async def get_reviews(
     user: User = Depends(JWTBearer()),
     paginator: Paginator = Depends(),
 ) -> ReviewSchema:
-    service = FilmService(get_mongo_db(), 'reviews')
+    service = get_service()
     reviews = await service.get_by_user_id(
         str(user.id),
         page_number=paginator.page,
@@ -61,3 +62,8 @@ async def get_reviews(
         ),
         data=reviews,
     )
+
+
+@lru_cache()
+def get_service():
+    return FilmService(get_mongo_db(), 'reviews')

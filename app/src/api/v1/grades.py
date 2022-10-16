@@ -75,7 +75,6 @@ async def update_grade(
     user: User = Depends(JWTBearer()),
 ) -> UserGrade:
     service = get_service()
-    # user_grade = UserGrade(user_id=user.id, **grade.dict())
     return await service.update(grade_id, grade)
 
 
