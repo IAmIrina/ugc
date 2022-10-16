@@ -24,7 +24,7 @@ async def add_bookmark(
 ) -> Bookmark:
     service = FilmService(get_mongo_db(), 'bookmarks')
     user_bookmark = Bookmark(user_id=user.id, **movie.dict())
-    return await service.add_data(user_bookmark)
+    return await service.add(user_bookmark)
 
 
 @router.get(
@@ -37,7 +37,7 @@ async def get_bookmarks(
     paginator: Paginator = Depends(),
 ) -> BookmarkSchema:
     service = FilmService(get_mongo_db(), 'bookmarks')
-    bookmarks = await service.get_data_by_user_id(
+    bookmarks = await service.get_by_user_id(
         str(user.id),
         page_number=paginator.page,
         per_page=paginator.per_page,
