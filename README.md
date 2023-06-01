@@ -1,6 +1,6 @@
 # Проектная работа 8 спринта
 
-Ссылка на репо: https://github.com/AlexRussianPyth/ugc_sprint_1
+Ссылка на репо: https://github.com/IAmIrina
 
 ## API сервиса
 API сервиса можно найти по адресу http://localhost:8002/api/openapi
@@ -36,11 +36,11 @@ docker-compose -f docker-compose.dev.yml up --build
 В папке ./uml/ хранится plantUML, описываюший структуру UGC сервиса и всего проекта Movies.
 
 ### Приложение Movies (To Be)
-![alt text](https://github.com/AlexRussianPyth/ugc_sprint_1/blob/main/uml/images/tobe.png?raw=true)
+![alt text](https://github.com/IAmIrina/ugc/blob/main/uml/images/tobe.png?raw=true)
 
 ### Приложение Movies (As Is)
-![alt text](https://github.com/AlexRussianPyth/ugc_sprint_1/blob/main/uml/images/asis.png?raw=true)
+![alt text](https://github.com/IAmIrina/ugc/blob/main/uml/images/asis.png?raw=true)
 
 ### Детальная схема UGC
-![alt text](https://github.com/AlexRussianPyth/ugc_sprint_1/blob/main/uml/images/ugc_detailed.png?raw=true)
+![alt text](https://github.com/IAmIrina/ugc/blob/main/uml/images/ugc_detailed.png?raw=true)
 
