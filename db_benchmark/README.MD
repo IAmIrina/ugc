@@ -1,21 +1,21 @@
-# Тестирование Vertica VS Clickhouse
+# Benchmark Vertica VS Clickhouse
 
-## Конфигурация Виртуальных машин на которых были подняты базы данных:
+## Virtual machine config with Databases
 
-Платформа Intel Ice Lake
-Гарантированная доля vCPU 100%
-vCPU 2
-RAM 8 ГБ
-Объём дискового пространства SSD 30 ГБ
+* Platform Intel Ice Lake
+* vCPU 100%
+* vCPU 2 Core
+* RAM 8 ГБ
+* SSD 30 ГБ
 
-## Конфигурации DB:
+## DB Configuration:
 * Vertica Single Node 
 * Clickhouse Single Node 
 * Clickhouse Cluster 4 Node Dictributed Table
 
 
-## Схема данных:
-Таблица metrics (
+## DB Schema:
+Table metrics (
     event_time DateTime, 
     user_id UUID, 
     movie_id String, 
@@ -23,27 +23,25 @@ RAM 8 ГБ
     Order by user_id, movie_id
     Partitions by DAY
 
-## Данные для теста:
+## Test data:
 unique User_id = 200 000
 unique movie_id = 5 000
 time interval = '2022-01-01' - '2022-02-01'
 Count of records = 10 000 000
 
-## Заключение:
-Недостатки Vertica:
-1) Заблокирован для России
-2) Требовательный к ресурсам: не прошел тест на 50 одновременных запросов - Insufficient resources to execute plan on pool general
-3) Время обработки запросов драматически выше, чем Clickhouse в той же конфигурации 
-3) SQL синтаксис сложнее, чем ClickHouse
+## Conclusion:
+Vertical cons:
+1) Blocked for Russia
+2) Needs a lot of resources: test for 50 simultaneous queries was failed: "Insufficient resources to execute plan on pool general"
+3) Process query time dramatic upper than Clickhouse on the same configuration.
+4) SQL syntacs more difficult than ClickHouse
 
+ClickHouse pros:
+1) Needs less hardware
+2) Read/Write speed much more upper 
+3) Distributed under the Apache License 2.0: Commercial Use and Private Use
 
-На тестировании Clickhouse показал ряд преимущества:
-1) менее требователь к аппаратному обеспечению 
-2) Скорость чтения и записи данных на порядок выше
-3) Распростаняется под лицензией Apache License 2.0:  Commercial use и  Private use 
-
-
-## Результаты тестирования (в секундах):
+## Results (seconds):
 
 |   | VERTICA | CLICKHOUSE CLUSTER | CLICKHOUSE SINGLE NODE|
 |  :--- |  :---: |  :---: |  :---: |

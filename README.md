@@ -1,14 +1,26 @@
-# Проектная работа 8 спринта
+# Project work "UGC for Online cinema". 
+Yandex Praktikum: 8 sprint, teamwork.
 
-Ссылка на репо: https://github.com/IAmIrina
+## DB Benchmark OLAP DB
+  Before developing of the service,  to choose storage for UGC we made DB benchmark.  db_benchmark folder contains source code of the benchmark for Clickhouse claster and Vertica. The result showed us that Clickhouse is more suitable for the our task.
+  [The result of the benchmark](https://github.com/IAmIrina/ugc/blob/main/db_benchmark/README.MD)
+
+
+## Stack
+- ClickHouse
+- Kafka
+- ELK
+- Sentry
+- FastAPI
 
 ## API сервиса
-API сервиса можно найти по адресу http://localhost:8002/api/openapi
+API of the service http://localhost:8002/api/openapi
 
-## Авторизация
-Эндпоинты в сервисе защищены через JWT токены.
+## Authorization
 
-Тело токена (пример)
+We use JWT to protect endpoints.
+
+Token body (example)
 ```
 {
   "sub": "16168708-f1c0-4767-9b6d-8601d396fd91",
@@ -20,27 +32,23 @@ API сервиса можно найти по адресу http://localhost:8002
   ]
 }
 ```
-## Запуск проекта
-Для запуска проекта
-1. Создайте файл **.env** (используйте образец **.env.example**)
-2. Запустите docker-compose
+## Deploy
+
+1. Create file **.env** (use example **.env.example**)
+2. Run docker-compose
 ```commandline
 docker-compose -f docker-compose.dev.yml up --build
 ```
-Дождитесь, пока скачаются образы и запустятся контейнеры.
-
-## Бенчмарк OLAP баз данных
-Смотрите Ридми в папке ./db_benchmark/
 
 ## UML
-В папке ./uml/ хранится plantUML, описываюший структуру UGC сервиса и всего проекта Movies.
+uml folder contains plantUML which describes the structure of the UGC service and the whole Movies project.
 
-### Приложение Movies (To Be)
+### APP Movies (To Be)
 ![alt text](https://github.com/IAmIrina/ugc/blob/main/uml/images/tobe.png?raw=true)
 
-### Приложение Movies (As Is)
+### APP Movies (As Is)
 ![alt text](https://github.com/IAmIrina/ugc/blob/main/uml/images/asis.png?raw=true)
 
-### Детальная схема UGC
+### UGC figure
 ![alt text](https://github.com/IAmIrina/ugc/blob/main/uml/images/ugc_detailed.png?raw=true)
 
